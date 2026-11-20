@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Školní hokej 2026 · enteria arena Pardubice</title>
+<meta name="description" content="Školní hokejový zápas 1. 12. 2026 od 19:30 v enteria areně Pardubice. Program, krasobruslaři, závod na nafukovačkách a občerstvení.">
+<meta name="theme-color" content="#06142b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='40' rx='22' ry='8' fill='%23111'/%3E%3Crect x='10' y='30' width='44' height='10' fill='%23222'/%3E%3Cellipse cx='32' cy='30' rx='22' ry='8' fill='%23333'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<header class="hero">
+  <div class="rink" aria-hidden="true">
+    <span class="line red"></span><span class="line blue l"></span><span class="line blue r"></span>
+    <span class="circle"></span>
+  </div>
+  <div class="hero-in">
+    <p class="kicker">Gymnázium Pardubice, Dašická · školní akce</p>
+    <h1>ŠKOLNÍ<br><span>HOKEJ</span></h1>
+    <p class="sub">Zápas na 3 třetiny · krasobruslaři · závod na nafukovačkách</p>
+    <div class="facts">
+      <div><b>Út 1. 12. 2026</b><small>datum</small></div>
+      <div><b>19:30</b><small>začátek</small></div>
+      <div><b>enteria arena</b><small>Pardubice</small></div>
+    </div>
+    <div class="countdown" aria-label="Odpočet do začátku">
+      <div><b id="d">--</b><small>dní</small></div>
+      <div><b id="h">--</b><small>hodin</small></div>
+      <div><b id="m">--</b><small>minut</small></div>
+      <div><b id="s">--</b><small>sekund</small></div>
+    </div>
+    <a class="btn" href="#program">Program večera</a>
+  </div>
+  <div class="puck" aria-hidden="true"></div>
+</header>
+
+<main>
+  <section id="program">
+    <h2>Program</h2>
+    <ol class="timeline">
+      <li><time>19:00</time><div><h3>Příchod a převlékání</h3><p>Hráči do šaten, diváci na tribunu.</p></div></li>
+      <li><time>19:30</time><div><h3>Rozbruslení</h3><p>Oba týmy se rozjedou na led.</p></div></li>
+      <li><time>19:35</time><div><h3>Nástup týmů</h3><p>Představení hráčů a úvodní slovo.</p></div></li>
+      <li class="period"><time>19:40</time><div><h3>1. třetina</h3><p>20 minut čistého času.</p></div></li>
+      <li class="break"><time>20:07</time><div><h3>Přestávka · krasobruslaři</h3><p>Vystoupení krasobruslařů.</p></div></li>
+      <li class="period"><time>20:12</time><div><h3>2. třetina</h3><p>20 minut čistého času.</p></div></li>
+      <li class="break"><time>20:39</time><div><h3>Přestávka · závod na nafukovačkách</h3><p>Jeden jezdec z každé třídy, tlačí kamarád. Start u modré čáry!</p></div></li>
+      <li class="period"><time>20:44</time><div><h3>3. třetina</h3><p>20 minut čistého času.</p></div></li>
+      <li><time>21:11</time><div><h3>Nájezdy</h3><p>Jen pokud bude remíza.</p></div></li>
+      <li class="final"><time>21:20</time><div><h3>Vyhlášení</h3><p>Pohár pro vítěze, nejlepší hráč a společná fotka.</p></div></li>
+      <li><time>21:30</time><div><h3>Konec</h3><p>Díky, že jste přišli!</p></div></li>
+    </ol>
+  </section>
+
+  <section id="bufet" class="alt">
+    <h2>Bufet</h2>
+    <p class="lead">Na tribuně se bude prodávat teplé i studené. Výdělek jde na pronájem ledu.</p>
+    <div class="menu">
+      <div class="item"><span class="ico">🥤</span><h3>Kofola z čepu</h3><p><b>0,3 l</b> 25 Kč</p><p><b>0,5 l</b> 40 Kč</p></div>
+      <div class="item"><span class="ico">🍵</span><h3>Teplý čaj</h3><p>25 Kč</p></div>
+      <div class="item"><span class="ico">🌭</span><h3>Párek v rohlíku</h3><p>35 Kč</p></div>
+      <div class="item"><span class="ico">🧁</span><h3>Domácí buchty</h3><p>20 Kč</p></div>
+    </div>
+    <p class="note">Na zimním stadionu je zima, vezměte si teplou bundu a čepici.</p>
+  </section>
+
+  <section id="misto">
+    <h2>Kde to je</h2>
+    <div class="place">
+      <div>
+        <h3>enteria arena Pardubice</h3>
+        <p>Zimní stadion v centru Pardubic, kousek od třídy Míru.</p>
+        <a class="btn ghost" href="https://www.google.com/maps/search/?api=1&amp;query=enteria+arena+Pardubice" target="_blank" rel="noopener">Otevřít v mapách</a>
+      </div>
+      <div class="when">
+        <p><b>Úterý 1. prosince 2026</b></p>
+        <p>Led od 19:30 do 21:30</p>
+        <p>Vstup pro diváky zdarma</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Školní hokej 2026 · Gymnázium Pardubice, Dašická 1083</p>
+  <p class="credit">Created by AMN</p>
+</footer>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>
