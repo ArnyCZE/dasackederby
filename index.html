@@ -4,19 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Školní hokej 2026 · enteria arena Pardubice</title>
-<meta name="description" content="Školní hokejový zápas 1. 12. 2026 od 19:30 v enteria areně Pardubice. Program, krasobruslaři, závod na nafukovačkách a občerstvení.">
+<meta name="description" content="Školní hokejový zápas 1. 12. 2026 od 19:30 v enteria areně Pardubice. Program, soupisky, občerstvení a podpora.">
 <meta name="theme-color" content="#06142b">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='40' rx='22' ry='8' fill='%23111'/%3E%3Crect x='10' y='30' width='44' height='10' fill='%23222'/%3E%3Cellipse cx='32' cy='30' rx='22' ry='8' fill='%23333'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
 <canvas id="snow" aria-hidden="true"></canvas>
 
-<header class="hero">
+<nav class="nav">
+  <a class="logo" href="#top">🏒 HOKEJ<span>26</span></a>
+  <div class="links">
+    <a href="#program">Program</a>
+    <a href="#soupisky">Soupisky</a>
+    <a href="#misto">Místo</a>
+    <a href="#bufet">Bufet</a>
+    <a href="#podpora">Podpořit</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
   <div class="rink" aria-hidden="true">
     <span class="line red"></span><span class="line blue l"></span><span class="line blue r"></span>
     <span class="circle"></span>
@@ -29,6 +40,7 @@
       <div><b>Út 1. 12. 2026</b><small>datum</small></div>
       <div><b>19:30</b><small>začátek</small></div>
       <div><b>enteria arena</b><small>Pardubice</small></div>
+      <div><b>Zdarma</b><small>vstup pro diváky</small></div>
     </div>
     <div class="countdown" aria-label="Odpočet do začátku">
       <div><b id="d">--</b><small>dní</small></div>
@@ -36,7 +48,10 @@
       <div><b id="m">--</b><small>minut</small></div>
       <div><b id="s">--</b><small>sekund</small></div>
     </div>
-    <a class="btn" href="#program">Program večera</a>
+    <div class="cta">
+      <a class="btn" href="#program">Program večera</a>
+      <a class="btn ghost" href="#podpora">Podpořit nás</a>
+    </div>
   </div>
   <div class="puck" aria-hidden="true"></div>
 </header>
@@ -59,8 +74,44 @@
     </ol>
   </section>
 
+  <section id="soupisky" class="alt">
+    <h2>Soupisky</h2>
+    <div class="teams">
+      <div class="team home">
+        <div class="team-head"><span class="badge">DOMÁCÍ</span><h3>Tým A</h3><p class="cls">třídy doplníme</p></div>
+        <ul class="roster">
+          <li class="tbd">Soupiska bude doplněna</li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team away">
+        <div class="team-head"><span class="badge">HOSTÉ</span><h3>Tým B</h3><p class="cls">třídy doplníme</p></div>
+        <ul class="roster">
+          <li class="tbd">Soupiska bude doplněna</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="misto">
+    <h2>Kde a kdy</h2>
+    <div class="place">
+      <div>
+        <h3>enteria arena Pardubice</h3>
+        <p>Zimní stadion v centru Pardubic, kousek od třídy Míru. Vchod pro diváky hlavním vstupem na tribunu.</p>
+        <a class="btn ghost small" href="https://www.google.com/maps/search/?api=1&amp;query=enteria+arena+Pardubice" target="_blank" rel="noopener">📍 Otevřít v mapách</a>
+      </div>
+      <div class="when">
+        <p><b>Úterý 1. prosince 2026</b></p>
+        <p>🕢 Led 19:30–21:30</p>
+        <p>🎟️ Vstup pro diváky zdarma</p>
+        <p>🧥 Na stadionu je zima, vezměte si bundu a čepici</p>
+      </div>
+    </div>
+  </section>
+
   <section id="bufet" class="alt">
-    <h2>Bufet</h2>
+    <h2>Občerstvení</h2>
     <p class="lead">Na tribuně se bude prodávat teplé i studené. Výdělek jde na pronájem ledu.</p>
     <div class="menu">
       <div class="item"><span class="ico">🥤</span><h3>Kofola z čepu</h3><p><b>0,3 l</b> 25 Kč</p><p><b>0,5 l</b> 40 Kč</p></div>
@@ -68,22 +119,29 @@
       <div class="item"><span class="ico">🌭</span><h3>Párek v rohlíku</h3><p>35 Kč</p></div>
       <div class="item"><span class="ico">🧁</span><h3>Domácí buchty</h3><p>20 Kč</p></div>
     </div>
-    <p class="note">Na zimním stadionu je zima, vezměte si teplou bundu a čepici.</p>
   </section>
 
-  <section id="misto">
-    <h2>Kde to je</h2>
-    <div class="place">
+  <section id="podpora">
+    <h2>Podpořte nás</h2>
+    <div class="support">
       <div>
-        <h3>enteria arena Pardubice</h3>
-        <p>Zimní stadion v centru Pardubic, kousek od třídy Míru.</p>
-        <a class="btn ghost" href="https://www.google.com/maps/search/?api=1&amp;query=enteria+arena+Pardubice" target="_blank" rel="noopener">Otevřít v mapách</a>
+        <p class="lead">Akce je pro diváky zdarma, ale led něco stojí. Pokud chcete přispět, naskenujte QR kód v bankovní aplikaci. Částku si zvolíte sami. Děkujeme! 💙</p>
+        <div class="amounts" role="group" aria-label="Částka">
+          <button data-amount="50">50 Kč</button>
+          <button data-amount="100" class="on">100 Kč</button>
+          <button data-amount="200">200 Kč</button>
+          <button data-amount="0">Vlastní</button>
+        </div>
+        <p class="acc" id="acc"></p>
       </div>
-      <div class="when">
-        <p><b>Úterý 1. prosince 2026</b></p>
-        <p>Led od 19:30 do 21:30</p>
-        <p>Vstup pro diváky zdarma</p>
-      </div>
+      <div class="qr-box"><div id="qr"></div><p class="qr-note" id="qr-note">QR kód pro platbu</p></div>
+    </div>
+  </section>
+
+  <section id="weby" class="alt">
+    <h2>Naše další weby</h2>
+    <div class="weblinks">
+      <a href="https://maturak.virtuos.tech" target="_blank" rel="noopener"><span>🎩</span><b>Maturitní ples 2027</b><small>Back to the Future · 30. 1. 2027 · Ideon</small></a>
     </div>
   </section>
 </main>
@@ -93,6 +151,7 @@
   <p class="credit">Created by AMN</p>
 </footer>
 
-<script src="app.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
