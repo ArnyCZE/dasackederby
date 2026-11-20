@@ -175,3 +175,75 @@ section { scroll-margin-top: 70px; }
   .links a { padding: .4rem .55rem; font-size: .78rem; }
   .hero { padding-top: 5rem; }
 }
+
+/* ---------- MOBIL: spodní lišta s ikonami, kompaktní úvod, větší tlačítka ---------- */
+.links a i { font-style: normal; margin-right: .3rem; }
+@media (max-width: 760px) {
+  /* horní lišta jen s logem, menu jako spodní lišta s ikonami (palcem dosažitelná) */
+  .nav { justify-content: center; padding: .55rem .8rem; }
+  .links {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+    background: rgba(6,20,43,.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(207,232,255,.15);
+    padding: .3rem .2rem calc(.3rem + env(safe-area-inset-bottom));
+    overflow: visible;
+  }
+  .links a {
+    display: flex; flex-direction: column; align-items: center; gap: .1rem;
+    padding: .35rem 0; border-radius: 10px; font-size: .66rem; min-height: 50px; justify-content: center;
+  }
+  .links a i { margin: 0; font-size: 1.25rem; line-height: 1; }
+  body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  section { scroll-margin-top: 60px; padding: 3.2rem 1rem; }
+
+  /* úvod: menší, ať se vejde na jednu obrazovku */
+  .hero { min-height: auto; padding: 4.6rem 1rem 3rem; }
+  .rink { inset: 70px 3vw 2vh; border-radius: 40px; opacity: .6; }
+  h1 { font-size: clamp(4rem, 22vw, 6rem); margin: .4rem 0 .2rem; }
+  .sub { font-size: .9rem; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin: 1.3rem 0 1rem; }
+  .facts div { min-width: 0; padding: .6rem .5rem; }
+  .facts b { font-size: 1.35rem; }
+  .facts small { font-size: .62rem; }
+  .countdown { gap: .4rem; margin-bottom: 1.3rem; }
+  .countdown b { font-size: 1.8rem; }
+  .countdown small { font-size: .55rem; }
+  .cta { flex-direction: column; align-items: stretch; }
+  .cta .btn { text-align: center; padding: 1rem; }
+  .puck { display: none; }
+
+  h2 { font-size: 2.6rem; margin-bottom: 1.1rem; }
+
+  /* program: kompaktní řádky */
+  .timeline { margin-left: .2rem; }
+  .timeline li { grid-template-columns: 54px 1fr; gap: .6rem; padding: .7rem 0 .7rem 1rem; }
+  .timeline li::before { left: -9px; top: 1.05rem; }
+  .timeline time { font-size: 1.35rem; }
+  .timeline h3 { font-size: 1rem; }
+  .timeline p { font-size: .88rem; }
+  .timeline .period h3 { font-size: 1.5rem; }
+  .timeline .period div, .timeline .break div { padding: .55rem .8rem; }
+
+  /* bufet: 2 sloupce */
+  .menu { grid-template-columns: 1fr 1fr; gap: .6rem; }
+  .item { padding: 1rem .6rem; border-radius: 14px; }
+  .item .ico { font-size: 2rem; }
+  .item h3 { font-size: 1.35rem; }
+  .item p { font-size: .9rem; }
+
+  /* soupisky, místo, podpora */
+  .team h3 { font-size: 1.8rem; }
+  .vs { font-size: 2rem; margin: -.3rem 0; }
+  .place > div { padding: 1.2rem; }
+  .place .btn.small { display: block; text-align: center; }
+  .amounts { display: grid; grid-template-columns: 1fr 1fr; }
+  .amounts button { padding: .85rem; font-size: 1rem; }
+  .qr-box { max-width: 240px; }
+  .weblinks a { padding: 1rem; }
+  footer { padding: 2rem 1rem; }
+}
+@media (max-width: 360px) {
+  .links a { font-size: .58rem; }
+  .countdown b { font-size: 1.5rem; }
+}
