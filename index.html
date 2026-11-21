@@ -6,11 +6,14 @@
 <title>Dašácké derby 2026 · enteria arena Pardubice</title>
 <meta name="description" content="Dašácké derby – hokejový zápas maturantů Gymnázia Pardubice, Dašická · 1. 12. 2026 od 19:30 v enteria areně. Program, soupisky, občerstvení a podpora.">
 <meta name="theme-color" content="#08090b">
+<meta property="og:title" content="Dašácké derby · 1. 12. 2026 · enteria arena">
+<meta property="og:description" content="Hokejový zápas maturantů Gymnázia Pardubice, Dašická. Vstup zdarma.">
+<meta property="og:image" content="https://arnycze.github.io/dasackederby/plakat.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='40' rx='22' ry='8' fill='%23111'/%3E%3Crect x='10' y='30' width='44' height='10' fill='%23222'/%3E%3Cellipse cx='32' cy='30' rx='22' ry='8' fill='%23333'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=5">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -29,32 +32,52 @@
 
 <header class="hero" id="top">
   <div class="lights" aria-hidden="true"></div>
-  <div class="hero-in">
-    <p class="kicker">Gymnázium Pardubice, Dašická · maturanti 2027</p>
-    <h1 class="poster-title">DAŠÁCKÉ<br>DERBY</h1>
-    <p class="sub">Zápas na 3 třetiny · krasobruslaři · závod na nafukovačkách</p>
-    <div class="facts">
-      <div><b>Út 1. 12.</b><small>datum</small></div>
-      <div><b>19:30</b><small>začátek</small></div>
-      <div><b>enteria arena</b><small>Pardubice</small></div>
-      <div><b>Zdarma</b><small>vstup</small></div>
+  <div class="hero-grid2">
+    <div class="poster3d" id="poster" aria-label="Plakát Dašácké derby">
+      <div class="poster-card">
+        <div class="poster-crop"><img src="plakat.jpg" alt="Plakát Dašácké derby – hráči v dresech a nápis Dašácké derby"></div>
+        <span class="glare" aria-hidden="true"></span>
+      </div>
+      <span class="poster-shadow" aria-hidden="true"></span>
     </div>
-    <div class="countdown" aria-label="Odpočet do začátku">
-      <div><b id="d">--</b><small>dní</small></div>
-      <div><b id="h">--</b><small>hodin</small></div>
-      <div><b id="m">--</b><small>minut</small></div>
-      <div><b id="s">--</b><small>sekund</small></div>
-    </div>
-    <div class="cta">
-      <a class="btn" href="#program">Program večera</a>
-      <a class="btn ghost" href="#podpora">Podpořit nás</a>
+
+    <div class="hero-in">
+      <p class="kicker">Gymnázium Pardubice, Dašická · maturanti 2027</p>
+      <h1 class="poster-title">DAŠÁCKÉ<br>DERBY</h1>
+      <p class="sub">Zápas na 3 třetiny · krasobruslaři · závod na nafukovačkách</p>
+
+      <div class="scoreboard" aria-label="Odpočet do začátku zápasu">
+        <div class="sb-top"><span>DOMÁCÍ</span><span class="sb-period">DO ÚVODNÍHO BULY</span><span>HOSTÉ</span></div>
+        <div class="sb-main">
+          <b class="sb-score">0</b>
+          <div class="sb-clock">
+            <div><b id="d">--</b><small>DNÍ</small></div><i>:</i>
+            <div><b id="h">--</b><small>HOD</small></div><i>:</i>
+            <div><b id="m">--</b><small>MIN</small></div><i>:</i>
+            <div><b id="s">--</b><small>SEK</small></div>
+          </div>
+          <b class="sb-score">0</b>
+        </div>
+      </div>
+
+      <div class="facts">
+        <div><b>Út 1. 12.</b><small>datum</small></div>
+        <div><b>19:30</b><small>začátek</small></div>
+        <div><b>enteria arena</b><small>Pardubice</small></div>
+        <div><b>Zdarma</b><small>vstup</small></div>
+      </div>
+      <div class="cta">
+        <a class="btn" href="#program">Program večera</a>
+        <a class="btn ghost" href="#podpora">Podpořit nás</a>
+      </div>
     </div>
   </div>
+  <div class="ice-edge" aria-hidden="true"></div>
 </header>
 
 <main>
   <section id="program">
-    <h2>Program</h2>
+    <h2><span class="stick" aria-hidden="true">🏒</span> Program</h2>
     <ol class="timeline">
       <li><time>19:00</time><div><h3>Příchod a převlékání</h3><p>Hráči do šaten, diváci na tribunu.</p></div></li>
       <li><time>19:30</time><div><h3>Rozbruslení</h3><p>Oba týmy se rozjedou na led.</p></div></li>
@@ -148,6 +171,6 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

@@ -359,3 +359,84 @@ footer .credit { color: var(--ice2); }
   .poster-title { font-size: clamp(4.6rem, 24vw, 7.5rem); }
   .hero .lights { height: 45%; opacity: .45; }
 }
+
+/* =====================================================================
+   PLAKÁT VE 3D + HOKEJOVÉ PRVKY (11/2026)
+   ===================================================================== */
+.hero { text-align: left; }
+.hero-grid2 {
+  position: relative; z-index: 1; width: 100%; max-width: 1180px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(260px, 430px) 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center;
+}
+.hero-in { max-width: none; }
+.hero .facts, .hero .cta { justify-content: flex-start; }
+
+/* plakát: karta, která se naklání podle myši / náklonu telefonu */
+.poster3d { position: relative; perspective: 1100px; justify-self: center; width: 100%; opacity: 0; animation: up 1s var(--ease) .15s forwards; }
+.poster-card {
+  --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 30%;
+  position: relative; border-radius: 14px; overflow: hidden;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(0);
+  transform-style: preserve-3d; transition: transform .25s ease-out;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 30px 70px rgba(0,0,0,.7), 0 0 60px rgba(226,40,60,.18);
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+/* výřez z fotky monitoru: jen samotný plakát */
+.poster-crop { position: relative; width: 100%; aspect-ratio: 0.871; overflow: hidden; background: #0c0d10; }
+.poster-crop img { position: absolute; width: 121.95%; height: 188.7%; left: -9.76%; top: -50.9%; max-width: none; object-fit: fill; filter: contrast(1.08) saturate(1.1); }
+.glare {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(circle at var(--gx) var(--gy), rgba(255,255,255,.28), transparent 45%);
+}
+.poster-shadow { position: absolute; left: 10%; right: 10%; bottom: -26px; height: 26px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.65), transparent 70%); filter: blur(4px); animation: shadow 6s ease-in-out infinite; }
+@keyframes shadow { 0%, 100% { transform: scaleX(1); opacity: .8; } 50% { transform: scaleX(.88); opacity: .55; } }
+
+/* nadpis vedle plakátu menší, ať neopakuje plakát přes celou šířku */
+.hero-grid2 .poster-title { font-size: clamp(4rem, 9vw, 8rem); }
+
+/* odpočet jako stadionová časomíra */
+.scoreboard {
+  margin: 1.4rem 0 1.2rem; max-width: 540px;
+  background: linear-gradient(180deg, #121417, #050607); border: 2px solid #2a2e35; border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 40px rgba(0,0,0,.6);
+  padding: .7rem .9rem .9rem; opacity: 0; animation: up .8s var(--ease) .7s forwards;
+}
+.sb-top { display: flex; justify-content: space-between; font-weight: 800; font-size: .62rem; letter-spacing: .2em; color: var(--muted); }
+.sb-top .sb-period { color: var(--orange); }
+.sb-main { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .8rem; margin-top: .4rem; }
+.sb-score { font-family: "Orbitron", monospace; font-weight: 900; font-size: 2.4rem; color: var(--red); text-shadow: 0 0 14px rgba(226,40,60,.8); min-width: 2.2rem; text-align: center; }
+.sb-clock { display: flex; justify-content: center; align-items: flex-start; gap: .25rem; background: #000; border-radius: 8px; padding: .5rem .4rem; }
+.sb-clock div { text-align: center; }
+.sb-clock b { display: block; font-family: "Orbitron", monospace; font-weight: 700; font-size: clamp(1.4rem, 3.6vw, 2rem); color: #ffb43a; text-shadow: 0 0 12px rgba(255,180,58,.75); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.sb-clock small { font-size: .55rem; font-weight: 800; letter-spacing: .15em; color: #6b7179; }
+.sb-clock i { font-style: normal; font-family: "Orbitron", monospace; color: #ffb43a; font-size: 1.4rem; line-height: 1.4; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.hero .countdown { display: none; }
+
+/* spodní okraj úvodu jako mantinel a led */
+.ice-edge { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: linear-gradient(180deg, #f2f4f7 0 4px, var(--red) 4px 8px, rgba(255,255,255,.0) 8px); opacity: .9; }
+
+h2 .stick { font-size: .6em; vertical-align: middle; }
+
+@media (max-width: 900px) {
+  .hero { text-align: center; padding-top: 5rem; }
+  .hero-grid2 { grid-template-columns: 1fr; gap: 2rem; }
+  .poster3d { max-width: 340px; }
+  .hero .facts, .hero .cta { justify-content: center; }
+  .scoreboard { margin-left: auto; margin-right: auto; }
+  .hero-grid2 .poster-title { font-size: clamp(3.6rem, 18vw, 6rem); }
+}
+@media (max-width: 760px) {
+  .poster3d { max-width: 82vw; }
+  .sb-score { font-size: 1.8rem; min-width: 1.6rem; }
+  .sb-main { gap: .4rem; }
+  .sb-clock { gap: .1rem; padding: .45rem .2rem; }
+  .sb-clock b { font-size: 1.35rem; }
+  .sb-clock i { font-size: 1.1rem; }
+  .sb-top { font-size: .52rem; letter-spacing: .12em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .poster-card, .poster-shadow { animation: none; }
+  .poster3d, .scoreboard { opacity: 1; }
+}

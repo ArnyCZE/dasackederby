@@ -91,3 +91,40 @@ var PAY_MESSAGE = "Podpora skolni hokej";
   window.addEventListener("resize", size);
   size(); draw();
 })();
+
+/* ===== Plakát ve 3D: náklon podle myši (počítač) nebo náklonu telefonu ===== */
+(function () {
+  var wrap = document.getElementById("poster");
+  if (!wrap) return;
+  var card = wrap.querySelector(".poster-card");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) return;
+  var MAX = 14;
+  function set(x, y) { // x, y v rozsahu -1..1
+    card.style.setProperty("--ry", (x * MAX).toFixed(2) + "deg");
+    card.style.setProperty("--rx", (-y * MAX).toFixed(2) + "deg");
+    card.style.setProperty("--gx", (50 + x * 40).toFixed(1) + "%");
+    card.style.setProperty("--gy", (40 + y * 40).toFixed(1) + "%");
+  }
+  wrap.addEventListener("pointermove", function (e) {
+    var r = wrap.getBoundingClientRect();
+    set((e.clientX - r.left) / r.width * 2 - 1, (e.clientY - r.top) / r.height * 2 - 1);
+  });
+  wrap.addEventListener("pointerleave", function () { set(0, 0); });
+
+  // telefon: jemný náklon podle gyroskopu, jinak pomalé samovolné natáčení
+  var gotTilt = false;
+  window.addEventListener("deviceorientation", function (e) {
+    if (e.gamma == null || e.beta == null) return;
+    gotTilt = true;
+    var x = Math.max(-1, Math.min(1, e.gamma / 25));
+    var y = Math.max(-1, Math.min(1, (e.beta - 45) / 25));
+    set(x, y);
+  });
+  var t = 0;
+  setInterval(function () {
+    if (gotTilt || wrap.matches(":hover")) return;
+    t += 0.05;
+    set(Math.sin(t) * 0.6, Math.cos(t * 0.8) * 0.35);
+  }, 50);
+})();
