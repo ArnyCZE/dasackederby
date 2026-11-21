@@ -266,3 +266,96 @@ h1 .na {
   h1 { font-size: clamp(4.4rem, 26vw, 7rem); }
   h1 .pre { font-size: .82rem; letter-spacing: .35em; }
 }
+
+/* =====================================================================
+   VZHLED PODLE PLAKÁTU „DAŠÁCKÉ DERBY“ (11/2026)
+   černo-grafitová hala, světla pod stropem, bílé tučné úzké písmo,
+   akcenty: červená/oranžová (dresy Dynama) a modrá.
+   ===================================================================== */
+:root {
+  --navy: #08090b;
+  --navy2: #16181c;
+  --ice: #ffffff;
+  --ice2: #d7dbe0;
+  --red: #e2283c;
+  --orange: #f26b1d;
+  --blue: #2f6fd6;
+  --text: #f4f5f7;
+  --muted: #9aa0a8;
+}
+body { background: var(--navy); }
+#snow { opacity: .35; }
+
+.nav { background: rgba(8,9,11,.92); border-bottom-color: rgba(255,255,255,.08); }
+.logo { letter-spacing: .06em; }
+.logo span { color: var(--text); }
+
+/* hala: tmavá kopule se světly pod stropem */
+.hero {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(255,255,255,.16), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% 100%, rgba(47,111,214,.10), transparent 70%),
+    linear-gradient(180deg, #1b1d22 0%, #0c0d10 55%, #08090b 100%);
+}
+.hero .lights {
+  position: absolute; left: -10%; right: -10%; top: 0; height: 55%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.85) 0 1.6px, transparent 2.4px) 0 0 / 46px 30px;
+  -webkit-mask: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 55%, transparent 100%);
+          mask: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 55%, transparent 100%);
+  transform: perspective(500px) rotateX(48deg); transform-origin: top center;
+  opacity: .55; pointer-events: none;
+}
+.hero .rink, .hero .puck { display: none; }
+
+.kicker { color: var(--ice2); }
+.poster-title {
+  font-family: "Bebas Neue", sans-serif; font-weight: 400;
+  font-size: clamp(5rem, 19vw, 12rem); line-height: .86; letter-spacing: .01em;
+  color: #fff; margin: .6rem 0 .6rem;
+  text-shadow: 0 4px 0 rgba(0,0,0,.4), 0 0 40px rgba(255,255,255,.18);
+}
+.sub { color: var(--ice2); }
+
+.facts div { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14); }
+.facts b { color: #fff; }
+.countdown div { background: #fff; color: #0c0d10; }
+.countdown small { color: #5d636b; }
+
+.btn { background: linear-gradient(90deg, var(--red), var(--orange)); box-shadow: 0 10px 30px rgba(226,40,60,.35); }
+.btn.ghost { background: transparent; border-color: rgba(255,255,255,.7); }
+
+h2 { color: #fff; }
+h2::after { background: linear-gradient(90deg, var(--red) 0 33%, var(--orange) 33% 66%, var(--blue) 66%); }
+section.alt { background: linear-gradient(180deg, transparent, rgba(255,255,255,.035) 20%, rgba(255,255,255,.035) 80%, transparent); }
+
+.timeline { border-left-color: rgba(255,255,255,.14); }
+.timeline li::before { background: var(--navy); border-color: #c9ced5; }
+.timeline time { color: #fff; }
+.timeline .period div { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.22); }
+.timeline .period::before { background: #fff; border-color: #fff; }
+.timeline .break div { background: rgba(242,107,29,.10); border-color: rgba(242,107,29,.5); }
+.timeline .break::before { border-color: var(--orange); }
+.timeline .final h3 { color: var(--orange); }
+
+.team { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12); }
+.home .team-head { background: linear-gradient(135deg, rgba(226,40,60,.55), rgba(242,107,29,.18)); }
+.away .team-head { background: linear-gradient(135deg, rgba(47,111,214,.55), rgba(47,111,214,.12)); }
+.vs { color: #fff; text-shadow: 0 0 20px rgba(255,255,255,.35); }
+
+.item { background: #fff; color: #0c0d10; }
+.item p { color: #3a3f46; }
+.item p b { color: var(--red); }
+
+.place > div, .weblinks a { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.12); }
+.amounts button.on { background: #fff; color: #0c0d10; border-color: #fff; }
+
+footer { border-top-color: rgba(255,255,255,.08); }
+footer .credit { color: var(--ice2); }
+
+@media (max-width: 760px) {
+  .nav { background: rgba(8,9,11,.97); }
+  .links { background: rgba(8,9,11,.97); }
+  .poster-title { font-size: clamp(4.6rem, 24vw, 7.5rem); }
+  .hero .lights { height: 45%; opacity: .45; }
+}
