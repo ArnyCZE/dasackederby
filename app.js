@@ -1,5 +1,5 @@
 /* ===== NASTAVENÍ ===== */
-// Číslo účtu pro dobrovolné příspěvky (IBAN bez mezer). Dokud je prázdné, místo QR se ukáže „brzy“.
+// Číslo účtu pro dobrovolné vstupné (IBAN bez mezer). Dokud je prázdné, místo QR se ukáže „brzy“.
 var IBAN = "";
 var ACCOUNT_LABEL = "";            // např. "123456789/0100" – jen pro zobrazení
 var PAY_MESSAGE = "Dasacke derby";
@@ -7,8 +7,8 @@ var PAY_MESSAGE = "Dasacke derby";
 (function () {
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* odpočet */
-  var target = new Date("2026-12-01T19:30:00+01:00").getTime();
+  /* odpočet – začátek podle plakátu 19:00 */
+  var target = new Date("2026-12-01T19:00:00+01:00").getTime();
   var el = { d: document.getElementById("d"), h: document.getElementById("h"), m: document.getElementById("m"), s: document.getElementById("s") };
   function pad(n) { return (n < 10 ? "0" : "") + n; }
   function tick() {
@@ -32,7 +32,7 @@ var PAY_MESSAGE = "Dasacke derby";
     if (e.target.closest("a")) { menu.classList.remove("open"); burger.setAttribute("aria-expanded", "false"); }
   });
 
-  /* zvýraznění aktivní sekce v menu */
+  /* zvýraznění aktivní sekce v menu + plynulé objevení obsahu */
   var links = menu.querySelectorAll('a[href^="#"]');
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
@@ -43,7 +43,6 @@ var PAY_MESSAGE = "Dasacke derby";
     }, { rootMargin: "-45% 0px -50% 0px" });
     document.querySelectorAll("main section[id]").forEach(function (s) { io.observe(s); });
 
-    /* plynulé objevení obsahu */
     var items = document.querySelectorAll(".sec-head, .team, .schedule li, .venue > *, .pricelist li, .support > *, .ig-in > *");
     if (!reduce) {
       var ro = new IntersectionObserver(function (entries) {

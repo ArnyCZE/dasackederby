@@ -248,3 +248,20 @@ h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; f
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- podle finálního plakátu: 8.AB (červená) vs 4.FH (bílá) ---------- */
+.tagline { font-weight: 800; font-size: clamp(.72rem, 1.4vw, .9rem); letter-spacing: .14em; text-transform: uppercase; color: #fff; }
+.poster img { display: block; width: 100%; height: auto; }
+.hero-bg img { object-position: 50% 30%; }
+.side { display: flex; flex-direction: column; font-size: clamp(2.2rem, 4.6vw, 3.4rem); line-height: .9; }
+.side small { margin-top: .25rem; }
+.side-a { color: var(--red); border-color: var(--red); }
+.side-b { color: #fff; border-color: #fff; }
+.red { color: var(--red); }
+.team-b header::after { background: #fff; }
+.team-b header { background: linear-gradient(135deg, rgba(255,255,255,.12), transparent 70%); }
+.team-a h3 { color: var(--red); }
+@media (max-width: 760px) {
+  .tagline { font-size: .66rem; letter-spacing: .1em; }
+  .side { font-size: 2.3rem; }
+}
