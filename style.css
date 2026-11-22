@@ -265,3 +265,67 @@ h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; f
   .tagline { font-size: .66rem; letter-spacing: .1em; }
   .side { font-size: 2.3rem; }
 }
+
+/* =====================================================================
+   ÚVOD JAKO PLAKÁT (11/2026): celý web jednolitě černý, vystředěný,
+   texty sázené jako na plakátu, z plakátu jen fotka hráčů
+   ===================================================================== */
+body.poster-theme { background: #000; }
+.poster-theme .section-alt, .poster-theme .section { background: #000; border: 0; }
+.poster-theme .section + .section { border-top: 1px solid rgba(255,255,255,.07); }
+
+.poster-hero { position: relative; overflow: hidden; padding: 92px 1rem 70px; text-align: center; background: #000; isolation: isolate; }
+/* tváře hráčů po stranách (jako na plakátu) – rozmazané a ztmavené pozadí přes celou šířku */
+.ph-faces { position: absolute; inset: 0; z-index: -1; }
+.ph-faces img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; opacity: .55; filter: brightness(.7); }
+.ph-faces::after { content: ""; position: absolute; inset: 0; background:
+  radial-gradient(ellipse 45% 55% at 50% 40%, rgba(0,0,0,.25), rgba(0,0,0,.92) 100%),
+  linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.2) 40%, #000 78%); }
+
+.ph-inner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+.ph-tagline { font-family: var(--sans); font-weight: 800; text-transform: uppercase; letter-spacing: .02em; word-spacing: .35em; font-size: clamp(.78rem, 2.1vw, 1.35rem); color: #fff; }
+.ph-logo { width: 62px; height: 62px; border-radius: 50%; margin: 1.1rem 0 .2rem; background: #fff; object-fit: cover; box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+
+/* hráči: výřez prostřední části plakátu (bez textů), okraje se rozplývají do černé */
+.ph-art { position: relative; width: min(100%, 760px); aspect-ratio: 1.70; overflow: hidden; margin-top: -.4rem;
+  -webkit-mask: radial-gradient(ellipse 62% 78% at 50% 42%, #000 55%, transparent 100%);
+          mask: radial-gradient(ellipse 62% 78% at 50% 42%, #000 55%, transparent 100%); }
+.ph-art img { position: absolute; left: 0; top: -31.25%; width: 100%; height: auto; }
+
+.ph-title { font-family: var(--display); font-weight: 400; text-transform: uppercase; color: #fff; line-height: .82; letter-spacing: .005em;
+  font-size: clamp(4.2rem, 15.5vw, 11.5rem); margin-top: -.42em; position: relative; text-shadow: 0 8px 40px rgba(0,0,0,.6); white-space: nowrap; }
+.ph-match { display: flex; align-items: baseline; justify-content: center; gap: clamp(1.4rem, 5vw, 3.2rem); margin-top: .45rem; font-family: var(--sans); font-weight: 800; font-size: clamp(1.2rem, 3.4vw, 2.1rem); }
+.ph-match .a { color: var(--red); }
+.ph-match .b, .ph-match .vs { color: #fff; }
+.ph-when { margin-top: 1.1rem; font-family: var(--sans); font-weight: 900; text-transform: uppercase; color: #fff; line-height: 1.05; letter-spacing: .01em; font-size: clamp(1.7rem, 5vw, 3.1rem); }
+.ph-fee { margin-top: .5rem; font-family: var(--sans); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #fff; font-size: clamp(.8rem, 2vw, 1.1rem); }
+
+.ph-count { display: grid; grid-template-columns: repeat(4, 86px); gap: .6rem; margin-top: 2.2rem; }
+.ph-count div { border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: .7rem .3rem .55rem; background: rgba(0,0,0,.45); }
+.ph-count b { display: block; font-family: var(--display); font-weight: 400; font-size: 2.4rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.ph-count small { font-size: .6rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.ph-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin-top: 1.6rem; }
+
+/* sekce níž v témže stylu: vystředěné nadpisy jako na plakátu */
+.poster-theme .sec-head { margin-inline: auto; text-align: center; }
+.poster-theme .lead { margin-inline: auto; }
+.poster-theme .kicker { color: #fff; opacity: .6; letter-spacing: .28em; }
+.poster-theme h2 { font-size: clamp(3rem, 7vw, 5rem); }
+.poster-theme .schedule, .poster-theme .pricelist { margin-inline: auto; max-width: 760px; }
+.poster-theme .team, .poster-theme .venue-card, .poster-theme .map { background: #0b0b0c; }
+.poster-theme .ig-band { background: #000; border-top: 1px solid rgba(255,255,255,.07); }
+.poster-theme .ig-in { justify-content: center; text-align: center; flex-direction: column; }
+.poster-theme .site-header.scrolled { background: rgba(0,0,0,.85); }
+
+@media (max-width: 760px) {
+  .poster-hero { padding: 80px .8rem 56px; }
+  .ph-tagline { word-spacing: .15em; font-size: .72rem; max-width: 22em; }
+  .ph-logo { width: 50px; height: 50px; }
+  .ph-art { width: 118%; max-width: none; margin-inline: -9%; }
+  .ph-title { font-size: clamp(3.4rem, 17vw, 5.5rem); }
+  .ph-count { grid-template-columns: repeat(4, 1fr); width: 100%; gap: .45rem; }
+  .ph-count b { font-size: 2rem; }
+  .ph-actions { flex-direction: column; width: 100%; }
+  .ph-actions .btn { width: 100%; }
+  .poster-theme .site-header { background: rgba(0,0,0,.85); }
+}
