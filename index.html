@@ -3,148 +3,181 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dašácké derby 2026 · enteria arena Pardubice</title>
-<meta name="description" content="Dašácké derby – hokejový zápas maturantů Gymnázia Pardubice, Dašická · 1. 12. 2026 od 19:30 v enteria areně. Program, soupisky, občerstvení a podpora.">
-<meta name="theme-color" content="#08090b">
+<title>Dašácké derby 2026 · Čtyřleté vs. Osmileté · enteria arena Pardubice</title>
+<meta name="description" content="Dašácké derby: hokejový zápas čtyřletých proti osmiletým ročníkům Gymnázia Pardubice, Dašická. Úterý 1. 12. 2026 od 19:30, enteria arena Pardubice. Vstup zdarma.">
+<meta name="theme-color" content="#0a0a0b">
+<meta property="og:type" content="website">
 <meta property="og:title" content="Dašácké derby · 1. 12. 2026 · enteria arena">
-<meta property="og:description" content="Hokejový zápas maturantů Gymnázia Pardubice, Dašická. Vstup zdarma.">
+<meta property="og:description" content="Čtyřleté vs. Osmileté ročníky. Úterý 1. 12. od 19:30, vstup zdarma.">
 <meta property="og:image" content="https://arnycze.github.io/dasackederby/plakat.jpg">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='40' rx='22' ry='8' fill='%23111'/%3E%3Crect x='10' y='30' width='44' height='10' fill='%23222'/%3E%3Cellipse cx='32' cy='30' rx='22' ry='8' fill='%23333'/%3E%3C/svg%3E">
+<link rel="icon" href="https://graph.facebook.com/gypce.cz/picture?type=small">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
-<canvas id="snow" aria-hidden="true"></canvas>
+<!-- SVG ikony -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 0 0 4v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z" transform="translate(0 1)"/><path d="M14 5v14" stroke-dasharray="2 2"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+</svg>
 
-<nav class="nav">
-  <a class="logo" href="#top">DAŠÁCKÉ <span>DERBY</span></a>
-  <div class="links">
-    <a href="#program"><i>🕒</i>Program</a>
-    <a href="#soupisky"><i>👥</i>Soupisky</a>
-    <a href="#misto"><i>📍</i>Místo</a>
-    <a href="#bufet"><i>🌭</i>Bufet</a>
-    <a href="#podpora"><i>🤍</i>Podpořit</a>
+<header class="site-header" id="hdr">
+  <div class="container hdr-in">
+    <a class="brand" href="#top" aria-label="Dašácké derby – úvod">
+      <img src="https://graph.facebook.com/gypce.cz/picture?type=large" alt="Logo Gymnázia Pardubice, Dašická" width="40" height="40">
+      <span>Dašácké <b>derby</b></span>
+    </a>
+    <nav class="menu" id="menu" aria-label="Hlavní menu">
+      <a href="#zapas">Zápas</a>
+      <a href="#program">Program</a>
+      <a href="#misto">Místo</a>
+      <a href="#bufet">Bufet</a>
+      <a href="#podpora">Podpora</a>
+      <a class="ig-btn" href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>@hokejdasak</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Otevřít menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </div>
-</nav>
-
-<header class="hero" id="top">
-  <div class="lights" aria-hidden="true"></div>
-  <div class="hero-grid2">
-    <div class="poster3d" id="poster" aria-label="Plakát Dašácké derby">
-      <div class="poster-card">
-        <div class="poster-crop"><img src="plakat.jpg" alt="Plakát Dašácké derby – hráči v dresech a nápis Dašácké derby"></div>
-        <span class="glare" aria-hidden="true"></span>
-      </div>
-      <span class="poster-shadow" aria-hidden="true"></span>
-    </div>
-
-    <div class="hero-in">
-      <p class="kicker">Gymnázium Pardubice, Dašická · maturanti 2027</p>
-      <h1 class="poster-title">DAŠÁCKÉ<br>DERBY</h1>
-      <p class="sub">Zápas na 3 třetiny · krasobruslaři · závod na nafukovačkách</p>
-
-      <div class="scoreboard" aria-label="Odpočet do začátku zápasu">
-        <div class="sb-top"><span>DOMÁCÍ</span><span class="sb-period">DO ÚVODNÍHO BULY</span><span>HOSTÉ</span></div>
-        <div class="sb-main">
-          <b class="sb-score">0</b>
-          <div class="sb-clock">
-            <div><b id="d">--</b><small>DNÍ</small></div><i>:</i>
-            <div><b id="h">--</b><small>HOD</small></div><i>:</i>
-            <div><b id="m">--</b><small>MIN</small></div><i>:</i>
-            <div><b id="s">--</b><small>SEK</small></div>
-          </div>
-          <b class="sb-score">0</b>
-        </div>
-      </div>
-
-      <div class="facts">
-        <div><b>Út 1. 12.</b><small>datum</small></div>
-        <div><b>19:30</b><small>začátek</small></div>
-        <div><b>enteria arena</b><small>Pardubice</small></div>
-        <div><b>Zdarma</b><small>vstup</small></div>
-      </div>
-      <div class="cta">
-        <a class="btn" href="#program">Program večera</a>
-        <a class="btn ghost" href="#podpora">Podpořit nás</a>
-      </div>
-    </div>
-  </div>
-  <div class="ice-edge" aria-hidden="true"></div>
 </header>
 
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true"><img src="plakat.jpg" alt=""></div>
+  <div class="hero-lights" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="dot"></span>Gymnázium Pardubice, Dašická · 1. 12. 2026</p>
+      <h1 class="title">Dašácké<br>derby</h1>
+      <div class="matchup">
+        <span class="side side-a">Čtyřleté<br><small>ročníky</small></span>
+        <span class="vs">vs</span>
+        <span class="side side-b">Osmileté<br><small>ročníky</small></span>
+      </div>
+      <ul class="meta">
+        <li><svg><use href="#i-cal"/></svg><span><b>Úterý 1. 12. 2026</b></span></li>
+        <li><svg><use href="#i-clock"/></svg><span><b>19:30</b> úvodní buly</span></li>
+        <li><svg><use href="#i-pin"/></svg><span><b>enteria arena</b> Pardubice</span></li>
+        <li><svg><use href="#i-ticket"/></svg><span><b>Vstup zdarma</b></span></li>
+      </ul>
+      <div class="countdown" aria-label="Do začátku zápasu zbývá">
+        <div><b id="d">--</b><small>dní</small></div>
+        <div><b id="h">--</b><small>hodin</small></div>
+        <div><b id="m">--</b><small>minut</small></div>
+        <div><b id="s">--</b><small>sekund</small></div>
+      </div>
+      <div class="actions">
+        <a class="btn btn-primary" href="#program">Program večera <svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-outline" href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>Sledovat @hokejdasak</a>
+      </div>
+    </div>
+    <div class="hero-poster">
+      <div class="poster" id="poster">
+        <div class="poster-crop"><img src="plakat.jpg" alt="Plakát Dašácké derby"></div>
+        <span class="glare" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+  <a class="scroll-cue" href="#zapas" aria-label="Posunout dolů"><span></span></a>
+</section>
+
 <main>
-  <section id="program">
-    <h2><span class="stick" aria-hidden="true">🏒</span> Program</h2>
-    <ol class="timeline">
-      <li><time>19:00</time><div><h3>Příchod a převlékání</h3><p>Hráči do šaten, diváci na tribunu.</p></div></li>
-      <li><time>19:30</time><div><h3>Rozbruslení</h3><p>Oba týmy se rozjedou na led.</p></div></li>
-      <li><time>19:35</time><div><h3>Nástup týmů</h3><p>Představení hráčů a úvodní slovo.</p></div></li>
-      <li class="period"><time>19:40</time><div><h3>1. třetina</h3><p>20 minut čistého času.</p></div></li>
-      <li class="break"><time>20:07</time><div><h3>Přestávka · krasobruslaři</h3><p>Vystoupení krasobruslařů.</p></div></li>
-      <li class="period"><time>20:12</time><div><h3>2. třetina</h3><p>20 minut čistého času.</p></div></li>
-      <li class="break"><time>20:39</time><div><h3>Přestávka · závod na nafukovačkách</h3><p>Jeden jezdec z každé třídy, tlačí kamarád. Start u modré čáry!</p></div></li>
-      <li class="period"><time>20:44</time><div><h3>3. třetina</h3><p>20 minut čistého času.</p></div></li>
-      <li><time>21:11</time><div><h3>Nájezdy</h3><p>Jen pokud bude remíza.</p></div></li>
-      <li class="final"><time>21:20</time><div><h3>Vyhlášení</h3><p>Pohár pro vítěze, nejlepší hráč a společná fotka.</p></div></li>
-      <li><time>21:30</time><div><h3>Konec</h3><p>Díky, že jste přišli!</p></div></li>
-    </ol>
-  </section>
-
-  <section id="soupisky" class="alt">
-    <h2>Soupisky</h2>
-    <div class="teams">
-      <div class="team home">
-        <div class="team-head"><span class="badge">DOMÁCÍ</span><h3>Tým A</h3><p class="cls">třídy doplníme</p></div>
-        <ul class="roster">
-          <li class="tbd">Soupiska bude doplněna</li>
-        </ul>
+  <section class="section" id="zapas">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">01 · Zápas</p>
+        <h2>Čtyřleté proti osmiletým</h2>
+        <p class="lead">Jeden večer, jeden led, jedno derby. Maturanti čtyřletého a osmiletého studia se utkají na tři třetiny o pohár a o to hlavní: kdo bude mít na Dašáku poslední slovo.</p>
       </div>
-      <div class="vs">VS</div>
-      <div class="team away">
-        <div class="team-head"><span class="badge">HOSTÉ</span><h3>Tým B</h3><p class="cls">třídy doplníme</p></div>
-        <ul class="roster">
-          <li class="tbd">Soupiska bude doplněna</li>
-        </ul>
+      <div class="teams">
+        <article class="team team-a">
+          <header><span class="tag">Domácí</span><h3>Čtyřleté ročníky</h3></header>
+          <ul class="roster"><li class="tba">Soupiska bude zveřejněna před zápasem</li></ul>
+        </article>
+        <div class="vs-big" aria-hidden="true">VS</div>
+        <article class="team team-b">
+          <header><span class="tag">Hosté</span><h3>Osmileté ročníky</h3></header>
+          <ul class="roster"><li class="tba">Soupiska bude zveřejněna před zápasem</li></ul>
+        </article>
       </div>
     </div>
   </section>
 
-  <section id="misto">
-    <h2>Kde a kdy</h2>
-    <div class="place">
+  <section class="section section-alt" id="program">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">02 · Program</p>
+        <h2>Průběh večera</h2>
+      </div>
+      <ol class="schedule">
+        <li><time>19:00</time><div><h3>Otevření haly</h3><p>Příchod hráčů a diváků.</p></div></li>
+        <li><time>19:30</time><div><h3>Rozbruslení</h3><p>Oba týmy na ledě.</p></div></li>
+        <li><time>19:35</time><div><h3>Nástup a představení týmů</h3></div></li>
+        <li class="is-period"><time>19:40</time><div><h3>1. třetina</h3><p>20 minut čistého času</p></div></li>
+        <li class="is-break"><time>20:07</time><div><h3>Přestávka</h3><p>Vystoupení krasobruslařů</p></div></li>
+        <li class="is-period"><time>20:12</time><div><h3>2. třetina</h3><p>20 minut čistého času</p></div></li>
+        <li class="is-break"><time>20:39</time><div><h3>Přestávka</h3><p>Závod na nafukovačkách</p></div></li>
+        <li class="is-period"><time>20:44</time><div><h3>3. třetina</h3><p>20 minut čistého času</p></div></li>
+        <li><time>21:11</time><div><h3>Samostatné nájezdy</h3><p>V případě nerozhodného výsledku</p></div></li>
+        <li class="is-final"><time>21:20</time><div><h3>Vyhlášení</h3><p>Pohár pro vítěze a nejlepší hráč zápasu</p></div></li>
+        <li><time>21:30</time><div><h3>Konec</h3></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="misto">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">03 · Místo</p>
+        <h2>enteria arena Pardubice</h2>
+      </div>
+      <div class="venue">
+        <div class="venue-card">
+          <dl>
+            <div><dt>Datum</dt><dd>Úterý 1. prosince 2026</dd></div>
+            <div><dt>Led</dt><dd>19:30–21:30</dd></div>
+            <div><dt>Vstup</dt><dd>Zdarma pro všechny diváky</dd></div>
+            <div><dt>Tip</dt><dd>V hale je zima, vezměte si teplé oblečení.</dd></div>
+          </dl>
+          <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&amp;query=enteria+arena+Pardubice" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>Navigovat</a>
+        </div>
+        <div class="map">
+          <iframe title="Mapa – enteria arena Pardubice" src="https://www.google.com/maps?q=enteria+arena+Pardubice&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="bufet">
+    <div class="container">
+      <div class="sec-head">
+        <p class="kicker">04 · Bufet</p>
+        <h2>Občerstvení</h2>
+        <p class="lead">Výtěžek z bufetu jde na pronájem ledu.</p>
+      </div>
+      <ul class="pricelist">
+        <li><span>Kofola z čepu <small>0,3 l</small></span><i></i><b>25 Kč</b></li>
+        <li><span>Kofola z čepu <small>0,5 l</small></span><i></i><b>40 Kč</b></li>
+        <li><span>Teplý čaj</span><i></i><b>25 Kč</b></li>
+        <li><span>Párek v rohlíku</span><i></i><b>35 Kč</b></li>
+        <li><span>Domácí buchty</span><i></i><b>20 Kč</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="podpora">
+    <div class="container support">
       <div>
-        <h3>enteria arena Pardubice</h3>
-        <p>Zimní stadion v centru Pardubic, kousek od třídy Míru. Vchod pro diváky hlavním vstupem na tribunu.</p>
-        <a class="btn ghost small" href="https://www.google.com/maps/search/?api=1&amp;query=enteria+arena+Pardubice" target="_blank" rel="noopener">📍 Otevřít v mapách</a>
-      </div>
-      <div class="when">
-        <p><b>Úterý 1. prosince 2026</b></p>
-        <p>🕢 Led 19:30–21:30</p>
-        <p>🎟️ Vstup pro diváky zdarma</p>
-        <p>🧥 Na stadionu je zima, vezměte si bundu a čepici</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="bufet" class="alt">
-    <h2>Občerstvení</h2>
-    <p class="lead">Na tribuně se bude prodávat teplé i studené. Výdělek jde na pronájem ledu.</p>
-    <div class="menu">
-      <div class="item"><span class="ico">🥤</span><h3>Kofola z čepu</h3><p><b>0,3 l</b> 25 Kč</p><p><b>0,5 l</b> 40 Kč</p></div>
-      <div class="item"><span class="ico">🍵</span><h3>Teplý čaj</h3><p>25 Kč</p></div>
-      <div class="item"><span class="ico">🌭</span><h3>Párek v rohlíku</h3><p>35 Kč</p></div>
-      <div class="item"><span class="ico">🧁</span><h3>Domácí buchty</h3><p>20 Kč</p></div>
-    </div>
-  </section>
-
-  <section id="podpora">
-    <h2>Podpořte nás</h2>
-    <div class="support">
-      <div>
-        <p class="lead">Akce je pro diváky zdarma, ale led něco stojí. Pokud chcete přispět, naskenujte QR kód v bankovní aplikaci. Částku si zvolíte sami. Děkujeme!</p>
+        <div class="sec-head">
+          <p class="kicker">05 · Podpora</p>
+          <h2>Podpořte derby</h2>
+          <p class="lead">Vstup je zdarma, pronájem ledu ale ne. Pokud chcete akci podpořit, naskenujte QR kód v bankovní aplikaci. Děkujeme.</p>
+        </div>
         <div class="amounts" role="group" aria-label="Částka">
           <button data-amount="50">50 Kč</button>
           <button data-amount="100" class="on">100 Kč</button>
@@ -153,24 +186,38 @@
         </div>
         <p class="acc" id="acc"></p>
       </div>
-      <div class="qr-box"><div id="qr"></div><p class="qr-note" id="qr-note">QR kód pro platbu</p></div>
+      <div class="qr-card"><div id="qr"></div><p id="qr-note">QR platba</p></div>
     </div>
   </section>
 
-  <section id="weby" class="alt">
-    <h2>Naše další weby</h2>
-    <div class="weblinks">
-      <a href="https://maturak.virtuos.tech" target="_blank" rel="noopener"><span>🎩</span><b>Maturitní ples 2027</b><small>Back to the Future · 30. 1. 2027 · Ideon</small></a>
+  <section class="ig-band">
+    <div class="container ig-in">
+      <div>
+        <p class="kicker">Instagram</p>
+        <h2>Sledujte <span>@hokejdasak</span></h2>
+        <p class="lead">Soupisky, fotky ze zápasu a výsledky jako první.</p>
+      </div>
+      <a class="btn btn-primary" href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>Otevřít Instagram</a>
     </div>
   </section>
 </main>
 
-<footer>
-  <p>Dašácké derby 2026 · Gymnázium Pardubice, Dašická 1083</p>
+<footer class="site-footer">
+  <div class="container foot-in">
+    <div class="foot-brand">
+      <img src="https://graph.facebook.com/gypce.cz/picture?type=large" alt="" width="44" height="44">
+      <div><b>Dašácké derby 2026</b><span>Gymnázium Pardubice, Dašická 1083</span></div>
+    </div>
+    <nav class="foot-links" aria-label="Odkazy">
+      <a href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener">Instagram @hokejdasak <svg><use href="#i-ext"/></svg></a>
+      <a href="https://www.gypce.cz/" target="_blank" rel="noopener">gypce.cz <svg><use href="#i-ext"/></svg></a>
+      <a href="https://maturak.virtuos.tech" target="_blank" rel="noopener">Maturitní ples 2027 <svg><use href="#i-ext"/></svg></a>
+    </nav>
+  </div>
   <p class="credit">Created by AMN</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
