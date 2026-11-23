@@ -67,7 +67,8 @@
   /* logo školy z gypce.cz (převedené na PNG přes wsrv.nl kvůli povolení pro nahrávání), přebarvené na bílou */
   var LOGO_SRC = "https://wsrv.nl/?url=www.gypce.cz/wp-content/themes/2025/assets/gypce-logo.svg&output=png&w=1700";
   var logoRaw = new Image(); logoRaw.crossOrigin = "anonymous"; logoRaw.src = LOGO_SRC;
-  var logoW = null; // bílá verze (canvas)
+  var logoW = null; // bílá verze celého loga (canvas)
+  var horseW = null, horseR = null; // jen kolečko s koněm – bílé a červené
   function prepLogo() {
     if (!logoRaw.naturalWidth) return;
     try {
@@ -76,7 +77,14 @@
       x.globalCompositeOperation = "source-in"; x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
       c.getContext("2d").getImageData(0, 0, 1, 1); // ověří, že obrázek jde použít pro nahrávání
       logoW = c;
-    } catch (e) { logoW = null; }
+      // kolečko s koněm = levý čtverec loga (šířka = výška)
+      var s = c.height;
+      horseW = document.createElement("canvas"); horseW.width = s; horseW.height = s;
+      horseW.getContext("2d").drawImage(c, 0, 0, s, s, 0, 0, s, s);
+      horseR = document.createElement("canvas"); horseR.width = s; horseR.height = s;
+      var hx = horseR.getContext("2d"); hx.drawImage(horseW, 0, 0);
+      hx.globalCompositeOperation = "source-in"; hx.fillStyle = RED; hx.fillRect(0, 0, s, s);
+    } catch (e) { logoW = null; horseW = null; horseR = null; }
   }
   // h = výška loga; align: "left" | "center" | "right"
   function logo(ctx, x, y, h, alpha, align) {
@@ -86,11 +94,19 @@
     ctx.drawImage(logoW, dx, y - h / 2, w, h); ctx.restore();
     return w;
   }
+  // kolečko s koněm: střed (x, y), průměr d, otočení rot, deformace sx/sy
+  function horse(ctx, x, y, d, rot, sx, sy, red, alpha, glow) {
+    var img = red ? horseR : horseW; if (!img || alpha <= .001) return;
+    ctx.save(); ctx.globalAlpha = C(alpha); ctx.translate(x, y); ctx.rotate(rot || 0); ctx.scale(sx || 1, sy || 1);
+    ctx.shadowColor = glow || (red ? "rgba(227,38,59,.9)" : "rgba(227,38,59,.8)"); ctx.shadowBlur = d * .18;
+    ctx.drawImage(img, -d / 2, -d / 2, d, d); ctx.restore();
+  }
 
   function C(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function E(x) { x = C(x); return 1 - Math.pow(1 - x, 3); }
   function S(p, a, b) { return E((p - a) / (b - a)); }
   function R(i) { var x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); }
+  function tri(x) { x = x - Math.floor(x); return x < .5 ? x * 2 : 2 - x * 2; } // 0→1→0
   function rr(ctx, x, y, w, h, r) {
     ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
@@ -100,7 +116,7 @@
   function bg(ctx, w, h, p) {
     ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h);
     var g = ctx.createRadialGradient(w * .5, 0, 0, w * .5, 0, Math.max(w, h) * .8);
-    g.addColorStop(0, "rgba(60,100,200,.14)"); g.addColorStop(1, "rgba(0,0,0,0)"); // modrý nádech školy
+    g.addColorStop(0, "rgba(60,100,200,.14)"); g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
     var ra = .18 + .08 * Math.sin(TAU * p);
     var r = ctx.createRadialGradient(0, h, 0, 0, h, w * .6);
@@ -156,14 +172,12 @@
     }
     ctx.restore();
   }
-  // logo školy v rohu každé scény
   function corner(ctx, w, h, p) { logo(ctx, 60, 62, 64, .9 * S(p, .03, .15), "left"); }
   function hero(ctx, w, h, p) { bg(ctx, w, h, p); beams(ctx, w, h, p); lights(ctx, w, h, p); snow(ctx, w, h, p, 70); }
   function env(ctx, w, h, p) {
     var a = 1 - Math.min(C(p / .05), C((1 - p) / .06));
     if (a > .001) { ctx.fillStyle = "rgba(0,0,0," + a.toFixed(3) + ")"; ctx.fillRect(0, 0, w, h); }
   }
-  // srdce se středem v (x, y), s = výška
   function heartPath(ctx, x, y, s) {
     var t = y - s * .45;
     ctx.beginPath(); ctx.moveTo(x, t + s * .3);
@@ -243,7 +257,7 @@
 
   /* ---------- scény 1920×1080 ---------- */
   var DATE = "ÚTERÝ 1. 12.  19:00  ·  ENTERIA ARÉNA";
-  function std(fn) { // společný základ: pozadí, logo v rohu, pruhy, prolnutí
+  function std(fn) {
     return function (ctx, w, h, p) { hero(ctx, w, h, p); fn(ctx, w, h, p); corner(ctx, w, h, p); bars(ctx, w, h, 8, S(p, .05, .3)); env(ctx, w, h, p); };
   }
   var scenes = [
@@ -344,7 +358,6 @@
       T(ctx, "DAŠÁCKÉ DERBY  ·  8.AB VS 4.FH", w / 2, 860, 60, { color: MUTED, spacing: 4, alpha: S(p, .24, .34) });
     });
   }
-  // přesilovka jednoho týmu = oslabení druhého
   function powerPlay(team, color, other, otherColor) {
     var glow = color === RED ? "rgba(227,38,59,.7)" : "rgba(255,255,255,.5)";
     return std(function (ctx, w, h, p) {
@@ -408,7 +421,7 @@
     bars(ctx, w, h, 6, A(.05, .3)); if (!still) env(ctx, w, h, p);
   }
 
-  /* ---------- běžící pásy (ring, prstenec) – konce navazují ---------- */
+  /* ---------- běžící pásy (ring, prstenec) ---------- */
   var PARTS = [["DAŠÁCKÉ DERBY", WHITE], ["   •   ", MUTED], ["8.AB", RED], [" VS ", WHITE], ["4.FH", WHITE], ["   •   ", MUTED], ["GYMNÁZIUM PARDUBICE, DAŠICKÁ", "#c9d4ec"], ["   •   ", MUTED]];
   function ppParts(team, color, other, otherColor) {
     return [["PŘESILOVKA ", WHITE], [team, color], ["   •   ", MUTED], ["OSLABENÍ ", MUTED], [other, otherColor], ["   •   ", MUTED], ["5 NA 4", WHITE], ["   •   ", MUTED]];
@@ -471,21 +484,18 @@
     bars(ctx, w, h, 5, 1);
   }
 
-  /* ---------- kiss cam (průhledné pozadí – uprostřed zůstane volno pro obraz z kamery) ---------- */
+  /* ---------- kiss cam (průhledné pozadí) ---------- */
   function kissCam(ctx, w, h, p) {
-    var beat = Math.pow(.5 + .5 * Math.cos(TAU * p * 4), 8); // tlukot srdce 4× za smyčku
+    var beat = Math.pow(.5 + .5 * Math.cos(TAU * p * 4), 8);
     var pulse = 1 + .045 * beat;
-    // 1) rámeček kolem celé obrazovky: červený neon + tenká bílá linka
     ctx.save(); ctx.strokeStyle = RED; ctx.lineWidth = 14; ctx.shadowColor = "rgba(227,38,59,.95)"; ctx.shadowBlur = 30 + 25 * beat;
     rr(ctx, 26, 26, w - 52, h - 52, 44); ctx.stroke(); ctx.restore();
     ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 3; rr(ctx, 50, 50, w - 100, h - 100, 32); ctx.stroke(); ctx.restore();
-    // 2) velké srdce uprostřed jen jako obrys – do něj se trefí pár z kamery
     ctx.save(); ctx.translate(w / 2, h / 2 - 10); ctx.scale(pulse, pulse);
     heartPath(ctx, 0, 0, 620);
-    ctx.setLineDash([46, 26]); ctx.lineDashOffset = -p * 288; // běžící čárkovaný obrys
+    ctx.setLineDash([46, 26]); ctx.lineDashOffset = -p * 288;
     ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,.95)"; ctx.shadowColor = "rgba(227,38,59,.95)"; ctx.shadowBlur = 28;
     ctx.stroke(); ctx.restore();
-    // 3) srdíčka stoupají po stranách
     var H = h + 200;
     for (var i = 0; i < 28; i++) {
       var side = i % 2, sp = 1 + Math.floor(R(i + .3) * 2);
@@ -494,13 +504,10 @@
       ctx.save(); ctx.globalAlpha = .95 * C((y - 120) / (h * .35)); ctx.fillStyle = i % 3 ? RED : "#ff8fa0";
       ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 10; heart(ctx, x, y, 36 + R(i + .8) * 56); ctx.restore();
     }
-    // 4) horní lišta s logem školy
     ctx.save(); ctx.fillStyle = "rgba(0,0,0,.6)"; rr(ctx, w / 2 - 420, 74, 840, 118, 59); ctx.fill(); ctx.restore();
-    var lw = logo(ctx, 0, 0, 0, 0) ; // jen zjištění, jestli logo existuje
     var lgw = logoW ? 70 * logoW.width / logoW.height : 0, tw = 520, total = lgw ? lgw + 34 + tw : tw, sx = w / 2 - total / 2;
     if (lgw) logo(ctx, sx, 133, 70, 1, "left");
     T(ctx, "DAŠÁCKÉ DERBY", sx + (lgw ? lgw + 34 : 0), 137, 76, { align: "left" });
-    // 5) spodní cedule KISS CAM + výzva
     var bw = 820, bh = 160, by = h - bh - 120;
     ctx.save(); ctx.translate(w / 2, by + bh / 2); ctx.scale(pulse, pulse);
     ctx.shadowColor = "rgba(227,38,59,.95)"; ctx.shadowBlur = 45; ctx.fillStyle = RED; rr(ctx, -bw / 2, -bh / 2, bw, bh, bh / 2); ctx.fill();
@@ -510,9 +517,12 @@
     var blink = Math.floor(p * 8) % 2 === 0;
     T(ctx, "PUSU! PUSU! PUSU!", w / 2, h - 82, 46, { font: "Inter", weight: "900", spacing: 8, color: blink ? WHITE : "#ffb3bd", glow: "rgba(0,0,0,.8)", glowK: .3 });
   }
+
+  /* ---------- CLAP: dašácký koník lítá a skáče do rytmu ---------- */
   function clap(ctx, w, h, p) {
     var b = Math.floor(p * 8), f = p * 8 - b, pop = Math.exp(-f * 6), col = b % 2 ? WHITE : RED;
     var glow = b % 2 ? "rgba(255,255,255,.6)" : "rgba(227,38,59,.85)";
+    // paprsky při každém tlesknutí
     ctx.save(); ctx.translate(w / 2, h / 2); ctx.strokeStyle = col; ctx.lineCap = "round"; ctx.lineWidth = 12;
     ctx.globalAlpha = 1 - f; ctx.shadowColor = glow; ctx.shadowBlur = 20;
     for (var i = 0; i < 16; i++) {
@@ -520,6 +530,24 @@
       ctx.beginPath(); ctx.moveTo(Math.cos(a) * r1 * 1.5, Math.sin(a) * r1 * .8); ctx.lineTo(Math.cos(a) * r2 * 1.5, Math.sin(a) * r2 * .8); ctx.stroke();
     }
     ctx.restore();
+
+    if (horseW) {
+      // malí koníci vystřelí ze středu při každém tlesknutí a točí se
+      for (var j = 0; j < 8; j++) {
+        var ang = TAU * j / 8 + b * .4, dist = 160 + E(f) * 700;
+        var mx = w / 2 + Math.cos(ang) * dist * 1.4, my = h / 2 + Math.sin(ang) * dist * .75 + f * f * 160;
+        horse(ctx, mx, my, 90 * (1 - f * .4), TAU * f * (j % 2 ? 1 : -1), 1, 1, (j + b) % 2 === 0, (1 - f) * .95);
+      }
+      // velký koník poskakuje po obrazovce jako logo na DVD přehrávači (odráží se od okrajů)
+      var D = 230, bx = 110 + D / 2 + tri(p * 3) * (w - 220 - D), byy = 110 + D / 2 + tri(p * 2 + .25) * (h - 220 - D);
+      var squash = 1 + .22 * pop; // při tlesknutí se placne
+      var spin = Math.sin(TAU * p * 2) * .35 + (b % 2 ? .12 : -.12) * pop;
+      horse(ctx, bx, byy, D, spin, squash, 2 - squash, b % 4 === 0, 1);
+      // druhý koník jde proti němu a mrká barvou
+      var cx2 = 110 + D / 2 + tri(p * 2 + .5) * (w - 220 - D), cy2 = 110 + D / 2 + tri(p * 3 + .6) * (h - 220 - D);
+      horse(ctx, cx2, cy2, D * .75, -spin * 1.5, 2 - squash, squash, b % 2 === 1, .95);
+    }
+
     T(ctx, "CLAP!", w / 2, h / 2 - 20, 380, { color: col, scale: 1 + .3 * pop, glow: glow, glowK: .6 + .6 * pop });
     T(ctx, "LET'S GO DAŠÁK!", w / 2, h / 2 + 230, 90, { color: b % 2 ? RED : WHITE, glow: "rgba(0,0,0,.6)", glowK: .4 });
   }
@@ -558,7 +586,7 @@
   var G6 = "LED obrazovka sever · 1660 × 256";
   add("panel-sever", G6, "Základní grafika na začátek a po celou dobu hry: název, týmy, termín a logo školy. Nemizí, jen se jemně hýbe.", "Základní grafika", 1660, 256, 8, function (ctx, p) { panel(ctx, 1660, 256, p); });
   var G7 = "Kiss cam a CLAP (průhledné)";
-  add("kiss-cam", G7, "Průhledné pozadí, aby šlo dát přes obraz z kamery. Uprostřed je velké srdce jako obrys, do kterého se zabere pár. Na výběr: video MP4 (na černém pozadí), průhledné video WebM, sada průhledných snímků v ZIPu s návodem na .mov (ProRes 4444, alpha + RGB) nebo jeden obrázek PNG.", "Kiss cam", 1920, 1080, 4, function (ctx, p) { kissCam(ctx, 1920, 1080, p); }, { alpha: true });
+  add("kiss-cam", G7, "Průhledné pozadí, aby šlo dát přes obraz z kamery. U kiss cam je uprostřed velké srdce jako obrys, do kterého se zabere pár. U CLAP poskakuje po obrazovce dašácký koník a při každém tlesknutí vystřelí další. Na výběr: video MP4 (na černém pozadí), průhledné video WebM, sada průhledných snímků v ZIPu s návodem na .mov (ProRes 4444, alpha + RGB) nebo jeden obrázek PNG.", "Kiss cam", 1920, 1080, 4, function (ctx, p) { kissCam(ctx, 1920, 1080, p); }, { alpha: true });
   add("clap", G7, "", "CLAP!", 1920, 1080, 4, function (ctx, p) { clap(ctx, 1920, 1080, p); }, { alpha: true });
 
   /* ---------- nahrávání ---------- */
@@ -661,7 +689,6 @@
     busy = false; t0 = performance.now();
   }
 
-  /* ZIP se snímky PNG (bez komprese) */
   var CRC = (function () { var t = new Uint32Array(256); for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
   function crc32(u) { var c = 0xFFFFFFFF; for (var i = 0; i < u.length; i++) c = CRC[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
   function makeZip(files) {
