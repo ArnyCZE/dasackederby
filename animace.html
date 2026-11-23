@@ -247,10 +247,18 @@
   var scenes = [
     { title: "Gymnázium uvádí", dur: 8, line: SCHOOL, draw: function (ctx, w, h, p) {
       hero(ctx, w, h, p);
+      // logo výš a menší, pod ním oddělovací linka a dost místa, aby nic nezasahovalo do „UVÁDÍ“
       var a = S(p, .04, .2);
-      logo(ctx, w / 2, 330 + (1 - a) * 40, 230, a, "center");
-      var b = S(p, .2, .3); T(ctx, "UVÁDÍ", w / 2, 540, 70, { font: "Inter", weight: "800", spacing: 30 * (1 - b) + 14, color: MUTED, alpha: b });
-      var c = S(p, .28, .4); T(ctx, "DAŠÁCKÉ DERBY", w / 2, 700, 230, { alpha: c, scale: 1.2 - .2 * c, shine: (p - .5) / .3 });
+      logo(ctx, w / 2, 250 + (1 - a) * 30, 180, a, "center");
+      var ln = S(p, .14, .26);
+      if (ln > 0) {
+        var lw = 520 * ln;
+        var g = ctx.createLinearGradient(w / 2 - lw / 2, 0, w / 2 + lw / 2, 0);
+        g.addColorStop(0, "rgba(227,38,59,0)"); g.addColorStop(.5, "rgba(227,38,59,1)"); g.addColorStop(1, "rgba(227,38,59,0)");
+        ctx.fillStyle = g; ctx.fillRect(w / 2 - lw / 2, 425, lw, 4);
+      }
+      var b = S(p, .2, .3); T(ctx, "UVÁDÍ", w / 2, 500, 60, { font: "Inter", weight: "800", spacing: 30 * (1 - b) + 18, color: MUTED, alpha: b });
+      var c = S(p, .28, .4); T(ctx, "DAŠÁCKÉ DERBY", w / 2, 680, 230, { alpha: c, scale: 1.2 - .2 * c, shine: (p - .5) / .3 });
       T(ctx, "OSMILETÉ  VS  ČTYŘLETÉ", w / 2, 870, 64, { font: "Inter", weight: "900", alpha: S(p, .4, .5), spacing: 4 });
       bars(ctx, w, h, 8, S(p, .05, .3)); env(ctx, w, h, p);
     } },
