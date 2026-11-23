@@ -38,6 +38,7 @@
 <header>
   <h1>Dašácké derby · grafika na LED</h1>
   <p class="muted">Gymnázium Pardubice, Dašická 1083 · enteria arena · 1. 12. 2026. Všechno je ve smyčce: konec plynule navazuje na začátek, takže to technik může pustit dokola. Vyber grafiku a zkontroluj náhled. „Nahrát video MP4“ ho nahraje přímo tady v prohlížeči. Trvá to stejně dlouho jako samotné video a pak se samo stáhne. Během nahrávání nech záložku otevřenou v popředí. „Stáhnout PNG“ stáhne obrázek bez pohybu. Náhled v hale: <a href="vizualizace.html">vizualizace.html</a></p>
+  <p class="muted">Pozor: běžný přehrávač ve Windows průhlednost neumí, průhledné video WebM v něm vypadá rozmazaně a červeně. Na kontrolu doma použij „Nahrát video MP4“ (na černém pozadí). Průhledné verze jsou až pro technika.</p>
   <p id="support" class="muted"></p>
 </header>
 <main>
@@ -86,17 +87,19 @@
       hx.globalCompositeOperation = "source-in"; hx.fillStyle = RED; hx.fillRect(0, 0, s, s);
     } catch (e) { logoW = null; horseW = null; horseR = null; }
   }
-  function logo(ctx, x, y, h, alpha, align) {
+  function logo(ctx, x, y, h, alpha, align, flat) {
     if (!logoW || alpha <= .001) return 0;
     var w = h * logoW.width / logoW.height, dx = align === "center" ? x - w / 2 : align === "right" ? x - w : x;
-    ctx.save(); ctx.globalAlpha = C(alpha); ctx.shadowColor = "rgba(0,0,0,.6)"; ctx.shadowBlur = h * .15;
+    ctx.save(); ctx.globalAlpha = C(alpha); if (!flat) { ctx.shadowColor = "rgba(0,0,0,.6)"; ctx.shadowBlur = h * .15; }
     ctx.drawImage(logoW, dx, y - h / 2, w, h); ctx.restore();
     return w;
   }
-  function horse(ctx, x, y, d, rot, sx, sy, red, alpha, glow) {
+  // kolečko s koněm; flat = bez stínu (pro průhledné překryvy)
+  function horse(ctx, x, y, d, rot, sx, sy, red, alpha, flat) {
     var img = red ? horseR : horseW; if (!img || alpha <= .001) return;
     ctx.save(); ctx.globalAlpha = C(alpha); ctx.translate(x, y); ctx.rotate(rot || 0); ctx.scale(sx || 1, sy || 1);
-    ctx.shadowColor = glow || (red ? "rgba(227,38,59,.9)" : "rgba(227,38,59,.8)"); ctx.shadowBlur = d * .18;
+    if (!flat) { ctx.shadowColor = "rgba(227,38,59,.8)"; ctx.shadowBlur = d * .18; }
+    else { ctx.fillStyle = red ? WHITE : RED; ctx.beginPath(); ctx.arc(0, 0, d * .5, 0, TAU); ctx.fill(); } // podklad, aby byl koník čitelný
     ctx.drawImage(img, -d / 2, -d / 2, d, d); ctx.restore();
   }
 
@@ -215,6 +218,7 @@
   }
 
   /* ---------- text ---------- */
+  // o.flat = bez rozmazaného stínu; o.outline = tloušťka tmavého obrysu (čitelnost na průhledném pozadí)
   function T(ctx, txt, x, y, size, o) {
     o = o || {}; var a = o.alpha == null ? 1 : o.alpha; if (a <= .001) return;
     ctx.save(); ctx.globalAlpha = Math.min(1, a);
@@ -230,9 +234,12 @@
       g.addColorStop(0, fill); g.addColorStop(.5, fill === RED ? "#ffffff" : "#ff7b89"); g.addColorStop(1, fill);
       fill = g;
     }
+    if (o.outline) { ctx.lineJoin = "round"; ctx.lineWidth = o.outline; ctx.strokeStyle = o.outlineColor || "#000"; ctx.strokeText(txt, 0, 0); }
     ctx.fillStyle = fill;
-    if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = size * .3 * (o.glowK == null ? 1 : o.glowK); }
-    else { ctx.shadowColor = "rgba(0,0,0,.85)"; ctx.shadowBlur = size * .1; }
+    if (!o.flat) {
+      if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = size * .3 * (o.glowK == null ? 1 : o.glowK); }
+      else { ctx.shadowColor = "rgba(0,0,0,.85)"; ctx.shadowBlur = size * .1; }
+    }
     ctx.fillText(txt, 0, 0); ctx.restore();
   }
   function matchup(ctx, cx, y, size, k, leftAlign) {
@@ -481,62 +488,67 @@
     bars(ctx, w, h, 5, 1);
   }
 
-  /* ---------- kiss cam (průhledné pozadí) ---------- */
+  /* ---------- průhledné překryvy: bez rozmazaných stínů, jen čisté plochy a obrysy ---------- */
   function kissCam(ctx, w, h, p) {
     var beat = Math.pow(.5 + .5 * Math.cos(TAU * p * 4), 8);
-    var pulse = 1 + .045 * beat;
-    ctx.save(); ctx.strokeStyle = RED; ctx.lineWidth = 14; ctx.shadowColor = "rgba(227,38,59,.95)"; ctx.shadowBlur = 30 + 25 * beat;
-    rr(ctx, 26, 26, w - 52, h - 52, 44); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 3; rr(ctx, 50, 50, w - 100, h - 100, 32); ctx.stroke(); ctx.restore();
+    var pulse = 1 + .04 * beat;
+    // rámeček: červený + tenký bílý
+    ctx.save(); ctx.strokeStyle = RED; ctx.lineWidth = 14; rr(ctx, 26, 26, w - 52, h - 52, 44); ctx.stroke();
+    ctx.strokeStyle = WHITE; ctx.lineWidth = 4; rr(ctx, 48, 48, w - 96, h - 96, 32); ctx.stroke(); ctx.restore();
+    // srdce uprostřed jen jako čárkovaný obrys
     ctx.save(); ctx.translate(w / 2, h / 2 - 10); ctx.scale(pulse, pulse);
     heartPath(ctx, 0, 0, 620);
     ctx.setLineDash([46, 26]); ctx.lineDashOffset = -p * 288;
-    ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,.95)"; ctx.shadowColor = "rgba(227,38,59,.95)"; ctx.shadowBlur = 28;
-    ctx.stroke(); ctx.restore();
+    ctx.lineWidth = 16; ctx.strokeStyle = RED; ctx.stroke();
+    ctx.lineWidth = 7; ctx.strokeStyle = WHITE; ctx.stroke();
+    ctx.restore();
+    // pár srdíček stoupá po stranách
     var H = h + 200;
-    for (var i = 0; i < 28; i++) {
+    for (var i = 0; i < 12; i++) {
       var side = i % 2, sp = 1 + Math.floor(R(i + .3) * 2);
       var y = h + 100 - (R(i + .5) * H + p * sp * H) % H;
-      var x = (side ? w - 110 - R(i + .1) * 230 : 110 + R(i + .1) * 230) + Math.sin(TAU * (p * sp + R(i))) * 26;
-      ctx.save(); ctx.globalAlpha = .95 * C((y - 120) / (h * .35)); ctx.fillStyle = i % 3 ? RED : "#ff8fa0";
-      ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 10; heart(ctx, x, y, 36 + R(i + .8) * 56); ctx.restore();
+      var x = (side ? w - 130 - R(i + .1) * 160 : 130 + R(i + .1) * 160) + Math.sin(TAU * (p * sp + R(i))) * 20;
+      ctx.save(); ctx.globalAlpha = C((y - 150) / 200) * C((h - 150 - y) / 150 + 1); ctx.fillStyle = i % 3 ? RED : WHITE;
+      heart(ctx, x, y, 40 + R(i + .8) * 40); ctx.restore();
     }
-    ctx.save(); ctx.fillStyle = "rgba(0,0,0,.6)"; rr(ctx, w / 2 - 420, 74, 840, 118, 59); ctx.fill(); ctx.restore();
+    // horní lišta s logem
+    ctx.save(); ctx.fillStyle = "#000"; rr(ctx, w / 2 - 420, 74, 840, 118, 59); ctx.fill();
+    ctx.strokeStyle = RED; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
     var lgw = logoW ? 70 * logoW.width / logoW.height : 0, tw = 520, total = lgw ? lgw + 34 + tw : tw, sx = w / 2 - total / 2;
-    if (lgw) logo(ctx, sx, 133, 70, 1, "left");
-    T(ctx, "DAŠÁCKÉ DERBY", sx + (lgw ? lgw + 34 : 0), 137, 76, { align: "left" });
+    if (lgw) logo(ctx, sx, 133, 70, 1, "left", true);
+    T(ctx, "DAŠÁCKÉ DERBY", sx + (lgw ? lgw + 34 : 0), 137, 76, { align: "left", flat: true });
+    // spodní cedule
     var bw = 820, bh = 160, by = h - bh - 120;
     ctx.save(); ctx.translate(w / 2, by + bh / 2); ctx.scale(pulse, pulse);
-    ctx.shadowColor = "rgba(227,38,59,.95)"; ctx.shadowBlur = 45; ctx.fillStyle = RED; rr(ctx, -bw / 2, -bh / 2, bw, bh, bh / 2); ctx.fill();
-    ctx.shadowBlur = 0; ctx.fillStyle = WHITE; heart(ctx, -bw / 2 + 92, 0, 70); heart(ctx, bw / 2 - 92, 0, 70);
+    ctx.fillStyle = RED; rr(ctx, -bw / 2, -bh / 2, bw, bh, bh / 2); ctx.fill();
+    ctx.strokeStyle = WHITE; ctx.lineWidth = 5; ctx.stroke();
+    ctx.fillStyle = WHITE; heart(ctx, -bw / 2 + 92, 0, 70); heart(ctx, bw / 2 - 92, 0, 70);
     ctx.font = "400 140px 'Bebas Neue'"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("KISS CAM", 0, 8);
     ctx.restore();
     var blink = Math.floor(p * 8) % 2 === 0;
-    T(ctx, "PUSU! PUSU! PUSU!", w / 2, h - 82, 46, { font: "Inter", weight: "900", spacing: 8, color: blink ? WHITE : "#ffb3bd", glow: "rgba(0,0,0,.8)", glowK: .3 });
+    T(ctx, "PUSU! PUSU! PUSU!", w / 2, h - 82, 46, { font: "Inter", weight: "900", spacing: 8, color: blink ? WHITE : "#ffb3bd", flat: true, outline: 8 });
   }
 
-  /* ---------- tleskající ruce ---------- */
+  // tleskající ruce (emoji), bez stínu
   function hands(ctx, x, y, size, f, pop, tilt) {
-    var gap = size * .55 * (1 - Math.abs(Math.cos(Math.PI * f)));
+    var gap = size * .45 * (1 - Math.abs(Math.cos(Math.PI * f)));
     ctx.save(); ctx.translate(x, y); ctx.rotate(tilt || 0);
     ctx.font = size + "px " + EMOJI; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.shadowColor = "rgba(0,0,0,.5)"; ctx.shadowBlur = 14;
     ctx.save(); ctx.translate(-size * .3 - gap, 0); ctx.rotate(.35 - .25 * (gap / size)); ctx.scale(-1, 1); ctx.fillText("✋", 0, 0); ctx.restore();
     ctx.save(); ctx.translate(size * .3 + gap, 0); ctx.rotate(-.35 + .25 * (gap / size)); ctx.fillText("✋", 0, 0); ctx.restore();
-    if (pop > .05) {
-      ctx.strokeStyle = "rgba(255,255,255," + pop.toFixed(3) + ")"; ctx.lineWidth = size * .05; ctx.lineCap = "round";
-      ctx.shadowColor = "rgba(227,38,59,.9)"; ctx.shadowBlur = 20;
-      for (var i = 0; i < 5; i++) {
-        var a = -Math.PI / 2 + (i - 2) * .45, r1 = size * .55, r2 = size * (.75 + .3 * (1 - pop));
+    if (pop > .2) { // tři krátké čárky nad rukama při tlesknutí
+      ctx.strokeStyle = WHITE; ctx.lineWidth = size * .04; ctx.lineCap = "round"; ctx.globalAlpha = pop;
+      for (var i = -1; i <= 1; i++) {
+        var a = -Math.PI / 2 + i * .5, r1 = size * .6, r2 = size * .8;
         ctx.beginPath(); ctx.moveTo(Math.cos(a) * r1, Math.sin(a) * r1); ctx.lineTo(Math.cos(a) * r2, Math.sin(a) * r2); ctx.stroke();
       }
     }
     ctx.restore();
   }
 
-  /* ---------- CLAP: uprostřed volné okno na záběr z kamery, všechno ostatní kolem ---------- */
-  var CAM = { x: 400, y: 215, w: 1120, h: 630 }; // 16 : 9, průhledné
-  function camPoint(t) { // bod na obvodu okna, t 0..1 dokola
+  /* CLAP: uprostřed volné okno na záběr z kamery, kolem klidný rámeček, ruce a dva koníci */
+  var CAM = { x: 400, y: 215, w: 1120, h: 630 };
+  function camPoint(t) {
     var W = CAM.w, H = CAM.h, L = 2 * (W + H), d = (((t % 1) + 1) % 1) * L;
     if (d < W) return [CAM.x + d, CAM.y];
     d -= W; if (d < H) return [CAM.x + W, CAM.y + d];
@@ -544,57 +556,31 @@
     d -= W; return [CAM.x, CAM.y + H - d];
   }
   function clap(ctx, w, h, p) {
-    var b = Math.floor(p * 8), f = p * 8 - b, pop = Math.exp(-f * 6), col = b % 2 ? WHITE : RED;
-    var glow = b % 2 ? "rgba(255,255,255,.6)" : "rgba(227,38,59,.85)";
+    var b = Math.floor(p * 8), f = p * 8 - b, pop = Math.exp(-f * 6), on = b % 2 === 0;
     var X = CAM.x, Y = CAM.y, W = CAM.w, H = CAM.h;
-
-    // rámeček okna kamery – při tlesknutí zabliká a „poskočí“
-    var grow = 10 * pop;
-    ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 12 + 6 * pop; ctx.shadowColor = glow; ctx.shadowBlur = 30 + 30 * pop;
-    rr(ctx, X - grow, Y - grow, W + 2 * grow, H + 2 * grow, 30); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = 3; rr(ctx, X + 16, Y + 16, W - 32, H - 32, 20); ctx.stroke(); ctx.restore();
-    // rohové zaměřovací značky
-    ctx.save(); ctx.strokeStyle = WHITE; ctx.lineWidth = 8; ctx.lineCap = "round";
+    // rámeček: tenký, při tlesknutí se jen přebarví
+    ctx.save(); ctx.lineWidth = 10; ctx.strokeStyle = on ? RED : WHITE; rr(ctx, X, Y, W, H, 26); ctx.stroke();
+    ctx.lineWidth = 3; ctx.strokeStyle = on ? WHITE : RED; rr(ctx, X + 14, Y + 14, W - 28, H - 28, 18); ctx.stroke(); ctx.restore();
+    // rohové značky
+    ctx.save(); ctx.strokeStyle = WHITE; ctx.lineWidth = 6; ctx.lineCap = "round";
     [[X + 40, Y + 40, 1, 1], [X + W - 40, Y + 40, -1, 1], [X + 40, Y + H - 40, 1, -1], [X + W - 40, Y + H - 40, -1, -1]].forEach(function (c) {
-      ctx.beginPath(); ctx.moveTo(c[0], c[1] + c[3] * 60); ctx.lineTo(c[0], c[1]); ctx.lineTo(c[0] + c[2] * 60, c[1]); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(c[0], c[1] + c[3] * 50); ctx.lineTo(c[0], c[1]); ctx.lineTo(c[0] + c[2] * 50, c[1]); ctx.stroke();
     });
     ctx.restore();
-    // paprsky ven z rámečku při tlesknutí (jen mimo okno)
-    ctx.save(); ctx.strokeStyle = col; ctx.lineCap = "round"; ctx.lineWidth = 10; ctx.globalAlpha = 1 - f; ctx.shadowColor = glow; ctx.shadowBlur = 16;
-    for (var i = 0; i < 24; i++) {
-      var pt = camPoint(i / 24 + b * .02), cx = X + W / 2, cy = Y + H / 2;
-      var dx = pt[0] - cx, dy = pt[1] - cy, dl = Math.hypot(dx, dy); dx /= dl; dy /= dl;
-      var r1 = 30 + f * 120, r2 = r1 + 60 * (1 - f);
-      ctx.beginPath(); ctx.moveTo(pt[0] + dx * r1, pt[1] + dy * r1); ctx.lineTo(pt[0] + dx * r2, pt[1] + dy * r2); ctx.stroke();
-    }
-    ctx.restore();
-
+    // dva koníci jezdí po rámečku
     if (horseW) {
-      // koníci jezdí dokola po rámečku okna a při tlesknutí se placnou
-      var squash = 1 + .25 * pop;
-      for (var k = 0; k < 4; k++) {
-        var q = camPoint(p + k / 4);
-        horse(ctx, q[0], q[1], 120, Math.sin(TAU * (p * 4 + k / 4)) * .4, squash, 2 - squash, (k + b) % 2 === 0, 1);
+      var sq = 1 + .15 * pop;
+      for (var k = 0; k < 2; k++) {
+        var q = camPoint(p * .5 + k / 2);
+        horse(ctx, q[0], q[1], 96, Math.sin(TAU * (p * 2 + k / 2)) * .25, sq, 2 - sq, k === 0, 1, true);
       }
-      // malí koníci vystřelí z rohů okna ven
-      [[X, Y, -1, -1], [X + W, Y, 1, -1], [X, Y + H, -1, 1], [X + W, Y + H, 1, 1]].forEach(function (c, ci) {
-        for (var j = 0; j < 2; j++) {
-          var a = Math.atan2(c[3], c[2]) + (j ? .35 : -.35), d = E(f) * 260;
-          horse(ctx, c[0] + Math.cos(a) * d, c[1] + Math.sin(a) * d * .8, 70 * (1 - f * .4), TAU * f * (j ? 1 : -1), 1, 1, (ci + j + b) % 2 === 0, (1 - f) * .9);
-        }
-      });
     }
-
-    // tleskající ruce po stranách okna
-    hands(ctx, 200, 400, 200, f, pop, -.12);
-    hands(ctx, w - 200, 400, 200, f, pop, .12);
-    var f2 = (f + .5) % 1, pop2 = Math.exp(-f2 * 6);
-    hands(ctx, 200, 720, 140, f2, pop2, .1);
-    hands(ctx, w - 200, 720, 140, f2, pop2, -.1);
-
-    // nahoře CLAP!, dole LET'S GO DAŠÁK!
-    T(ctx, "CLAP!  CLAP!  CLAP!", w / 2, 108, 170, { color: col, scale: 1 + .12 * pop, glow: glow, glowK: .6 + .6 * pop, spacing: 6 });
-    T(ctx, "LET'S GO DAŠÁK!", w / 2, 960, 110, { color: b % 2 ? RED : WHITE, glow: "rgba(0,0,0,.7)", glowK: .4, scale: 1 + .06 * pop });
+    // ruce po stranách
+    hands(ctx, 200, 530, 180, f, pop, 0);
+    hands(ctx, w - 200, 530, 180, f, pop, 0);
+    // texty
+    T(ctx, "CLAP!  CLAP!  CLAP!", w / 2, 110, 150, { color: on ? RED : WHITE, scale: 1 + .05 * pop, flat: true, outline: 10, spacing: 6 });
+    T(ctx, "LET'S GO DAŠÁK!", w / 2, 955, 100, { color: WHITE, flat: true, outline: 10 });
   }
 
   /* ---------- seznam ---------- */
@@ -631,7 +617,7 @@
   var G6 = "LED obrazovka sever · 1660 × 256";
   add("panel-sever", G6, "Základní grafika na začátek a po celou dobu hry: název, týmy, termín a logo školy. Nemizí, jen se jemně hýbe.", "Základní grafika", 1660, 256, 8, function (ctx, p) { panel(ctx, 1660, 256, p); });
   var G7 = "Kiss cam a CLAP (průhledné)";
-  add("kiss-cam", G7, "Průhledné pozadí, aby šlo dát přes obraz z kamery. U kiss cam je uprostřed velké srdce jako obrys, do kterého se zabere pár. U CLAP je uprostřed volné okno 16 : 9 (1120 × 630 px, od bodu 400, 215) na záběr z kamery na publikum. Kolem něj tleskají ruce a po rámečku jezdí dašáčtí koníci. Na výběr: video MP4 (na černém pozadí), průhledné video WebM, sada průhledných snímků v ZIPu s návodem na .mov (ProRes 4444, alpha + RGB) nebo jeden obrázek PNG.", "Kiss cam", 1920, 1080, 4, function (ctx, p) { kissCam(ctx, 1920, 1080, p); }, { alpha: true });
+  add("kiss-cam", G7, "Průhledné pozadí, aby šlo dát přes obraz z kamery. U kiss cam je uprostřed velké srdce jako obrys, do kterého se zabere pár. U CLAP je uprostřed volné okno 16 : 9 (1120 × 630 px, od bodu 400, 215) na záběr z kamery. Na výběr: video MP4 (na černém pozadí), průhledné video WebM, sada průhledných snímků v ZIPu s návodem na .mov (ProRes 4444, alpha + RGB) nebo jeden obrázek PNG.", "Kiss cam", 1920, 1080, 4, function (ctx, p) { kissCam(ctx, 1920, 1080, p); }, { alpha: true });
   add("clap", G7, "", "CLAP!", 1920, 1080, 4, function (ctx, p) { clap(ctx, 1920, 1080, p); }, { alpha: true });
 
   /* ---------- nahrávání ---------- */
