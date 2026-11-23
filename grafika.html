@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Grafika na LED – Dašácké derby · enteria arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #0a0a0b; color: #f4f5f7; font-family: Inter, system-ui, sans-serif; }
+  header { padding: 2rem 1.2rem 1rem; max-width: 1200px; margin: 0 auto; }
+  h1 { font-family: "Bebas Neue"; font-weight: 400; font-size: 3.2rem; margin: 0; letter-spacing: .02em; }
+  h2 { font-family: "Bebas Neue"; font-weight: 400; font-size: 2.2rem; margin: 2.4rem 0 .3rem; }
+  .muted { color: #9ba1aa; font-size: .92rem; }
+  main { max-width: 1200px; margin: 0 auto; padding: 0 1.2rem 4rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.4rem; }
+  .item { background: #131418; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: .8rem; }
+  .item canvas { display: block; width: 100%; height: auto; border-radius: 4px; background: #000; }
+  .wide canvas { image-rendering: auto; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: .6rem; margin-top: .6rem; flex-wrap: wrap; }
+  .row b { font-size: .95rem; } .row small { color: #9ba1aa; }
+  button { font: 700 .82rem Inter; padding: .6rem 1rem; border-radius: 8px; border: 0; background: #e3263b; color: #fff; cursor: pointer; }
+  .full { grid-column: 1 / -1; }
+  table { border-collapse: collapse; margin-top: .6rem; font-size: .9rem; }
+  td { padding: .3rem .8rem .3rem 0; color: #c9ced5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Dašácké derby · grafika na LED</h1>
+  <p class="muted">Podle technických parametrů enteria areny 2025. Všechny soubory jsou PNG v přesném rozlišení. Klikni na „Stáhnout“.</p>
+  <table>
+    <tr><td>Obrazovka (kostka)</td><td>1920 × 1080 px</td></tr>
+    <tr><td>Ring</td><td>2560 × 128 px, konce na sebe navazují</td></tr>
+    <tr><td>Perimetr ochozu</td><td>62 848 × 128 px → 16 segmentů po 3 928 × 128 px</td></tr>
+    <tr><td>Panel sever</td><td>1660 × 256 px</td></tr>
+    <tr><td>Venkovní obrazovka</td><td>1280 × 720 px</td></tr>
+  </table>
+</header>
+<main id="main"></main>
+
+<script>
+(function () {
+  var RED = "#e3263b", WHITE = "#ffffff", MUTED = "#9ba1aa";
+  var poster = new Image(); poster.src = "plakat2.jpg";
+
+  /* ---------- pomocné kreslení ---------- */
+  function bg(ctx, w, h) {
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, w, h);
+    var g = ctx.createRadialGradient(w * .5, 0, 0, w * .5, 0, Math.max(w, h) * .8);
+    g.addColorStop(0, "rgba(255,255,255,.10)"); g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    var r = ctx.createRadialGradient(0, h, 0, 0, h, w * .6);
+    r.addColorStop(0, "rgba(227,38,59,.22)"); r.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = r; ctx.fillRect(0, 0, w, h);
+    var b = ctx.createRadialGradient(w, h, 0, w, h, w * .6);
+    b.addColorStop(0, "rgba(255,255,255,.10)"); b.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = b; ctx.fillRect(0, 0, w, h);
+  }
+  function lights(ctx, w, h) { // světla pod stropem haly
+    ctx.save(); ctx.fillStyle = "rgba(255,255,255,.55)";
+    for (var y = 0; y < h * .35; y += 22 + y * .12) {
+      var a = 1 - y / (h * .35), step = 40 + y * .4;
+      for (var x = (y * 3) % step; x < w; x += step) { ctx.globalAlpha = a * .7; ctx.beginPath(); ctx.arc(x, y + 8, 1.6 + y * .01, 0, 7); ctx.fill(); }
+    }
+    ctx.restore();
+  }
+  // hráči z plakátu (výřez bez textů), okraje rozplynuté do černé
+  function players(ctx, x, y, w, h) {
+    if (!poster.complete || !poster.naturalWidth) return;
+    var sw = poster.naturalWidth, sh = poster.naturalHeight;
+    var sy = sh * .19, sH = sh * .47, sx = sw * .14, sW = sw * .72;
+    var scale = Math.min(w / sW, h / sH), dw = sW * scale, dh = sH * scale;
+    var dx = x + (w - dw) / 2, dy = y + (h - dh) / 2;
+    ctx.drawImage(poster, sx, sy, sW, sH, dx, dy, dw, dh);
+    var gb = ctx.createLinearGradient(0, dy + dh * .55, 0, dy + dh);
+    gb.addColorStop(0, "rgba(0,0,0,0)"); gb.addColorStop(1, "rgba(0,0,0,1)");
+    ctx.fillStyle = gb; ctx.fillRect(dx - 2, dy + dh * .55, dw + 4, dh * .45 + 2);
+    var gl = ctx.createLinearGradient(dx, 0, dx + dw * .18, 0);
+    gl.addColorStop(0, "rgba(0,0,0,1)"); gl.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gl; ctx.fillRect(dx - 2, dy, dw * .18, dh);
+    var gr = ctx.createLinearGradient(dx + dw, 0, dx + dw * .82, 0);
+    gr.addColorStop(0, "rgba(0,0,0,1)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gr; ctx.fillRect(dx + dw * .82, dy, dw * .18 + 2, dh);
+    var gt = ctx.createLinearGradient(0, dy, 0, dy + dh * .12);
+    gt.addColorStop(0, "rgba(0,0,0,1)"); gt.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = gt; ctx.fillRect(dx, dy - 2, dw, dh * .12);
+  }
+  function T(ctx, txt, x, y, size, opt) {
+    opt = opt || {};
+    ctx.save();
+    ctx.font = (opt.weight || "") + " " + size + "px " + (opt.font || "'Bebas Neue'");
+    ctx.textAlign = opt.align || "center"; ctx.textBaseline = "middle"; ctx.fillStyle = opt.color || WHITE;
+    if (opt.spacing) { try { ctx.letterSpacing = opt.spacing + "px"; } catch (e) {} }
+    if (opt.glow) { ctx.shadowColor = opt.glow; ctx.shadowBlur = size * .35; }
+    else { ctx.shadowColor = "rgba(0,0,0,.8)"; ctx.shadowBlur = size * .2; }
+    ctx.fillText(txt, x, y); ctx.restore();
+  }
+  function matchup(ctx, cx, y, size) {
+    ctx.save(); ctx.font = "800 " + size + "px Inter"; ctx.textBaseline = "middle";
+    var a = "8.AB", v = "VS", b = "4.FH", gap = size * 1.1;
+    var wa = ctx.measureText(a).width, wv = ctx.measureText(v).width, wb = ctx.measureText(b).width;
+    var x = cx - (wa + wv + wb + gap * 2) / 2;
+    ctx.fillStyle = RED; ctx.fillText(a, x, y); x += wa + gap;
+    ctx.fillStyle = WHITE; ctx.fillText(v, x, y); x += wv + gap; ctx.fillText(b, x, y);
+    ctx.restore();
+  }
+  function bars(ctx, w, h, t) { // tenké pruhy nahoře a dole (červená/bílá jako na plakátu)
+    ctx.fillStyle = RED; ctx.fillRect(0, h - t, w * .5, t);
+    ctx.fillStyle = WHITE; ctx.fillRect(w * .5, h - t, w * .5, t);
+  }
+  // nekonečný pás (konce navazují): text se opakuje v pevných slotech
+  function band(ctx, w, h, unit, opt) {
+    bg(ctx, w, h);
+    ctx.save(); ctx.font = "400 " + Math.round(h * .66) + "px 'Bebas Neue'";
+    var uw = ctx.measureText(unit).width, n = Math.max(1, Math.round(w / (uw * 1.0))), slot = w / n;
+    ctx.restore();
+    for (var i = 0; i < n; i++) {
+      var cx = slot * i + slot / 2;
+      drawUnit(ctx, cx, h / 2, h);
+    }
+    // jemná linka nahoře a dole
+    ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.fillRect(0, 0, w, Math.max(1, h * .02)); ctx.fillRect(0, h - Math.max(1, h * .02), w, Math.max(1, h * .02));
+  }
+  function drawUnit(ctx, cx, cy, h) {
+    var s = Math.round(h * .66);
+    ctx.save(); ctx.font = "400 " + s + "px 'Bebas Neue'"; ctx.textBaseline = "middle";
+    var p1 = "DAŠÁCKÉ DERBY", dot = "   •   ", p2 = "8.AB", p3 = " VS ", p4 = "4.FH", p5 = "   •   ";
+    var parts = [[p1, WHITE], [dot, MUTED], [p2, RED], [p3, WHITE], [p4, WHITE], [p5, MUTED]];
+    var tot = 0; parts.forEach(function (p) { tot += ctx.measureText(p[0]).width; });
+    var x = cx - tot / 2;
+    parts.forEach(function (p) { ctx.fillStyle = p[1]; ctx.fillText(p[0], x, cy + s * .04); x += ctx.measureText(p[0]).width; });
+    ctx.restore();
+  }
+  var UNIT = "DAŠÁCKÉ DERBY   •   8.AB VS 4.FH   •   ";
+
+  /* ---------- scény na kostku 1920×1080 (a venkovní 1280×720 se škáluje) ---------- */
+  function screen(title, draw) { return { title: title, w: 1920, h: 1080, draw: draw, group: "screen" }; }
+  function hero(ctx, w, h) { bg(ctx, w, h); lights(ctx, w, h); }
+  var scenes = [
+    screen("Úvod / plakát", function (ctx, w, h) {
+      hero(ctx, w, h);
+      T(ctx, "ČTYŘI TŘÍDY.  DVA TÝMY.  JEDNO UTKÁNÍ.  JEDINÝ VÍTĚZ.", w / 2, 70, 38, { font: "Inter", weight: "800", spacing: 2 });
+      players(ctx, w * .18, 110, w * .64, 600);
+      T(ctx, "DAŠÁCKÉ DERBY", w / 2, 740, 230);
+      matchup(ctx, w / 2, 885, 70);
+      T(ctx, "ÚTERÝ 1. 12.  19:00  ·  ENTERIA ARÉNA", w / 2, 990, 46, { font: "Inter", weight: "900" });
+      bars(ctx, w, h, 8);
+    }),
+    screen("Nástup týmů", function (ctx, w, h) {
+      hero(ctx, w, h); players(ctx, w * .22, 60, w * .56, 560);
+      T(ctx, "NÁSTUP TÝMŮ", w / 2, 690, 200);
+      matchup(ctx, w / 2, 840, 110);
+      bars(ctx, w, h, 8);
+    }),
+    screen("1. třetina", period("1. TŘETINA")),
+    screen("2. třetina", period("2. TŘETINA")),
+    screen("3. třetina", period("3. TŘETINA")),
+    screen("Přestávka · krasobruslaři", pause("VYSTOUPENÍ KRASOBRUSLAŘŮ")),
+    screen("Přestávka · nafukovačky", pause("ZÁVOD NA NAFUKOVAČKÁCH")),
+    screen("Samostatné nájezdy", function (ctx, w, h) {
+      hero(ctx, w, h); T(ctx, "SAMOSTATNÉ", w / 2, 380, 230); T(ctx, "NÁJEZDY", w / 2, 590, 300, { color: RED, glow: "rgba(227,38,59,.6)" });
+      matchup(ctx, w / 2, 830, 90); bars(ctx, w, h, 8);
+    }),
+    screen("Vítěz · 8.AB", winner("8.AB", RED)),
+    screen("Vítěz · 4.FH", winner("4.FH", WHITE)),
+    screen("Instagram", function (ctx, w, h) {
+      hero(ctx, w, h); players(ctx, w * .5, 120, w * .5, 820);
+      T(ctx, "SLEDUJTE NÁS", 120, 380, 150, { align: "left" });
+      T(ctx, "@HOKEJDASAK", 120, 560, 210, { align: "left", color: RED, glow: "rgba(227,38,59,.5)" });
+      T(ctx, "FOTKY, VÝSLEDKY A SOUPISKY NA INSTAGRAMU", 124, 720, 40, { align: "left", font: "Inter", weight: "800" });
+      bars(ctx, w, h, 8);
+    }),
+    screen("Vstupné dobrovolné", function (ctx, w, h) {
+      hero(ctx, w, h);
+      T(ctx, "VSTUPNÉ DOBROVOLNÉ", w / 2, 400, 200);
+      T(ctx, "DĚKUJEME, ŽE PODPORUJETE NAŠE MATURANTY", w / 2, 560, 54, { font: "Inter", weight: "800" });
+      T(ctx, "BUFET NA TRIBUNĚ", w / 2, 680, 90, { color: RED });
+      bars(ctx, w, h, 8);
+    }),
+    screen("Děkujeme", function (ctx, w, h) {
+      hero(ctx, w, h); players(ctx, w * .2, 80, w * .6, 560);
+      T(ctx, "DĚKUJEME!", w / 2, 720, 260);
+      T(ctx, "DAŠÁCKÉ DERBY 2026  ·  @HOKEJDASAK", w / 2, 890, 52, { font: "Inter", weight: "800" });
+      bars(ctx, w, h, 8);
+    })
+  ];
+  function period(label) {
+    return function (ctx, w, h) {
+      hero(ctx, w, h);
+      T(ctx, label, w / 2, 430, 340);
+      matchup(ctx, w / 2, 700, 120);
+      T(ctx, "DAŠÁCKÉ DERBY", w / 2, 900, 70, { color: MUTED, spacing: 6 });
+      bars(ctx, w, h, 8);
+    };
+  }
+  function pause(label) {
+    return function (ctx, w, h) {
+      hero(ctx, w, h);
+      T(ctx, "PŘESTÁVKA", w / 2, 300, 150, { color: RED });
+      T(ctx, label, w / 2, 520, label.length > 20 ? 190 : 220);
+      T(ctx, "DAŠÁCKÉ DERBY  ·  8.AB VS 4.FH", w / 2, 860, 60, { color: MUTED, spacing: 4 });
+      bars(ctx, w, h, 8);
+    };
+  }
+  function winner(team, color) {
+    return function (ctx, w, h) {
+      hero(ctx, w, h); players(ctx, w * .2, 60, w * .6, 520);
+      T(ctx, "VÍTĚZ DERBY", w / 2, 650, 160);
+      T(ctx, team, w / 2, 860, 320, { color: color, glow: color === RED ? "rgba(227,38,59,.6)" : "rgba(255,255,255,.4)" });
+      bars(ctx, w, h, 8);
+    };
+  }
+
+  /* ---------- ostatní zobrazovače ---------- */
+  var others = [
+    { title: "Ring (navazuje dokola)", w: 2560, h: 128, group: "ring", draw: function (ctx, w, h) { band(ctx, w, h, UNIT); } },
+    { title: "Perimetr ochozu · 1 segment (dodat 16× za sebou = 62 848 px)", w: 3928, h: 128, group: "perim", draw: function (ctx, w, h) { band(ctx, w, h, UNIT); } },
+    { title: "Panel sever", w: 1660, h: 256, group: "panel", draw: function (ctx, w, h) {
+      bg(ctx, w, h); players(ctx, w - 520, 0, 520, h);
+      T(ctx, "DAŠÁCKÉ DERBY", 60, 105, 140, { align: "left" });
+      ctx.save(); ctx.font = "800 54px Inter"; ctx.textBaseline = "middle";
+      ctx.fillStyle = RED; ctx.fillText("8.AB", 64, 200); var x = 64 + ctx.measureText("8.AB").width + 30;
+      ctx.fillStyle = WHITE; ctx.fillText("VS", x, 200); x += ctx.measureText("VS").width + 30; ctx.fillText("4.FH", x, 200); ctx.restore();
+      bars(ctx, w, h, 5);
+    } },
+    { title: "Venkovní obrazovka", w: 1280, h: 720, group: "outdoor", draw: function (ctx, w, h) {
+      ctx.save(); ctx.scale(w / 1920, h / 1080); scenes[0].draw(ctx, 1920, 1080); ctx.restore();
+    } }
+  ];
+
+  /* ---------- vykreslení stránky ---------- */
+  var main = document.getElementById("main");
+  function section(name, note, items) {
+    var h = document.createElement("h2"); h.textContent = name; main.appendChild(h);
+    if (note) { var p = document.createElement("p"); p.className = "muted"; p.textContent = note; main.appendChild(p); }
+    var g = document.createElement("div"); g.className = "grid"; main.appendChild(g);
+    items.forEach(function (it, i) {
+      var box = document.createElement("div"); box.className = "item" + (it.w / it.h > 5 ? " full wide" : "");
+      var cv = document.createElement("canvas"); cv.width = it.w; cv.height = it.h;
+      it.draw(cv.getContext("2d"), it.w, it.h);
+      var row = document.createElement("div"); row.className = "row";
+      row.innerHTML = "<div><b></b><br><small>" + it.w + " × " + it.h + " px · PNG</small></div>";
+      row.querySelector("b").textContent = it.title;
+      var btn = document.createElement("button"); btn.textContent = "Stáhnout";
+      btn.onclick = function () {
+        cv.toBlob(function (blob) {
+          var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+          a.download = "dasacke-derby_" + it.group + "_" + it.title.toLowerCase().replace(/[^a-z0-9á-ž]+/gi, "-").replace(/-+$/, "") + "_" + it.w + "x" + it.h + ".png";
+          a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+        }, "image/png");
+      };
+      row.appendChild(btn); box.appendChild(cv); box.appendChild(row); g.appendChild(box);
+    });
+  }
+  function build() {
+    main.innerHTML = "";
+    section("Obrazovka nad ledem (kostka)", "1920 × 1080 px · na každou část večera jedna scéna.", scenes);
+    section("Ring", "2560 × 128 px · levý a pravý konec na sebe navazují, takže kruh je celistvý.", [others[0]]);
+    section("Perimetr ochozu", "Celý perimetr má 62 848 px. Stačí dodat tento segment 3 928 × 128 px a nechat ho zopakovat 16× za sebou, konce na sebe navazují.", [others[1]]);
+    section("Panel sever", "1660 × 256 px", [others[2]]);
+    section("Venkovní obrazovka", "1280 × 720 px · bez zvuku", [others[3]]);
+  }
+  Promise.all([
+    document.fonts.load("400 100px 'Bebas Neue'"), document.fonts.load("800 40px Inter"), document.fonts.load("900 40px Inter"),
+    new Promise(function (r) { if (poster.complete) r(); else { poster.onload = r; poster.onerror = r; } })
+  ]).then(build, build);
+})();
+</script>
+</body>
+</html>
