@@ -90,7 +90,7 @@
 
   /* ---------- kreslení haly ---------- */
   // pás obrazovky natažený po elipse (a0 → a1), textura src opakovaná reps× dokola
-  function bandArc(src, reps, cx, cy, rx, ry, bh, a0, a1, N, shade) {
+  function bandArc(src, reps, cx, cy, rx, ry, bh, a0, a1, N) {
     if (!src || !src.width) return;
     var sw = src.width, sh = src.height, total = sw * reps, span = Math.abs(a1 - a0);
     for (var i = 0; i < N; i++) {
@@ -102,24 +102,18 @@
       var bhh = bh * (.75 + .25 * Math.abs(Math.sin((ta + tb) / 2)));
       try { ctx.drawImage(src, u0, 0, Math.max(1, Math.min(du, sw - u0)), sh, dx, y - bhh / 2, dw, bhh); } catch (e) {}
     }
-    if (shade) { // stínování ke krajům
-      ctx.save(); ctx.globalCompositeOperation = "source-atop"; ctx.restore();
-    }
   }
   function arena(t) {
-    // pozadí a strop
     var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#07080c"); g.addColorStop(1, "#111318");
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.05)"; ctx.lineWidth = 2;
     for (var i = -10; i <= 10; i++) { ctx.beginPath(); ctx.moveTo(800 + i * 40, 0); ctx.lineTo(800 + i * 160, 250); ctx.stroke(); }
     ctx.restore();
-    // světla
     for (var j = 0; j < 14; j++) {
       var lx = 140 + j * 101, ly = 40 + Math.abs(j - 6.5) * 4;
       var lg = ctx.createRadialGradient(lx, ly, 0, lx, ly, 28); lg.addColorStop(0, "rgba(255,255,255,.9)"); lg.addColorStop(1, "rgba(255,255,255,0)");
       ctx.fillStyle = lg; ctx.fillRect(lx - 28, ly - 28, 56, 56);
     }
-    // tribuny (soustředné elipsy)
     for (var r = 0; r < 16; r++) {
       var k = r / 15;
       ctx.beginPath(); ctx.ellipse(800, 640, 560 + k * 300, 205 + k * 160, 0, 0, TAU);
@@ -131,7 +125,6 @@
       ctx.beginPath(); ctx.ellipse(800, 640, 560 + k2 * 300, 205 + k2 * 160, 0, 0, TAU);
       ctx.strokeStyle = "rgba(160,20,35," + (.25 + .2 * (r2 % 3 === 0)) + ")"; ctx.lineWidth = 2; ctx.stroke();
     }
-    // publikum (tečky)
     ctx.save();
     for (var n = 0; n < 900; n++) {
       var a = (n * 2.39996) % TAU, rr = .25 + ((n * 0.6180339) % 1) * .7;
@@ -151,22 +144,25 @@
     ctx.fillStyle = "rgba(227,38,59,.6)"; ctx.fillRect(-440, -300, 5, 600); ctx.fillRect(435, -300, 5, 600);
     ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.lineWidth = 6; ctx.strokeStyle = "rgba(40,80,200,.75)"; ctx.stroke();
     ctx.restore();
-    // odraz kostky na ledu
-    var kc = cv(F.k);
-    if (kc && kc.width) { ctx.save(); ctx.globalAlpha = .12; ctx.translate(640, 760); ctx.scale(320 / 1920, -.06); try { ctx.drawImage(kc, 0, 0, 1920, 1080, 0, 0, 1920, 1080); } catch (e) {} ctx.restore(); }
+    // jemná barevná záře kostky na ledu (bez zrcadlového textu)
+    var gl = ctx.createRadialGradient(800, 650, 0, 800, 650, 260);
+    gl.addColorStop(0, "rgba(227,38,59,.10)"); gl.addColorStop(1, "rgba(227,38,59,0)");
+    ctx.fillStyle = gl; ctx.fillRect(540, 560, 520, 180);
   }
   function screens() {
-    // pás na ochozu (vzdálená polovina je vidět, ta bližší je otočená zády)
+    // pás na ochozu (vzdálená polovina)
     var pc = cv(F.p);
-    ctx.save(); ctx.fillStyle = "#000"; ctx.beginPath(); ctx.ellipse(800, 600, 715, 278, 0, Math.PI, TAU); ctx.lineWidth = 22; ctx.strokeStyle = "#000"; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(800, 600, 715, 278, 0, Math.PI, TAU); ctx.lineWidth = 22; ctx.strokeStyle = "#000"; ctx.stroke(); ctx.restore();
     ctx.save(); ctx.shadowColor = "rgba(255,255,255,.15)"; ctx.shadowBlur = 12;
     bandArc(pc, 4, 800, 600, 715, 278, 18, Math.PI, TAU, 360);
     ctx.restore();
-    // panel sever (na vzdálené straně)
-    var sc = cv(F.s);
-    ctx.fillStyle = "#000"; ctx.fillRect(536, 232, 528, 88);
-    if (sc && sc.width) { try { ctx.drawImage(sc, 0, 0, sc.width, sc.height, 540, 236, 520, 80); } catch (e) {} }
-    ctx.fillStyle = "rgba(255,255,255,.45)"; ctx.font = "700 13px Inter"; ctx.textAlign = "center"; ctx.fillText("PANEL SEVER", 800, 340);
+    // panel sever – na čelní stěně vlevo nahoře nad tribunou, aby ho nezakrývala kostka
+    var sc = cv(F.s), PX = 70, PY = 200, PW = 380, PH = PW * 256 / 1660;
+    ctx.save(); ctx.fillStyle = "#000"; ctx.fillRect(PX - 5, PY - 5, PW + 10, PH + 10);
+    ctx.shadowColor = "rgba(255,255,255,.2)"; ctx.shadowBlur = 16;
+    if (sc && sc.width) { try { ctx.drawImage(sc, 0, 0, sc.width, sc.height, PX, PY, PW, PH); } catch (e) {} }
+    ctx.restore();
+    ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.font = "700 13px Inter"; ctx.textAlign = "left"; ctx.fillText("PANEL SEVER", PX, PY + PH + 22);
     // lana kostky
     ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 2;
     [[560, 0, 560, 190], [1040, 0, 1040, 190], [700, 0, 660, 200], [900, 0, 940, 200]].forEach(function (l) { ctx.beginPath(); ctx.moveTo(l[0], l[1]); ctx.lineTo(l[2], l[3]); ctx.stroke(); });
@@ -176,8 +172,7 @@
     ctx.beginPath(); ctx.moveTo(X - SW, Y - SK); ctx.lineTo(X, Y); ctx.lineTo(X + KW, Y); ctx.lineTo(X + KW + SW, Y - SK); ctx.lineTo(X + KW, Y - 2 * SK + 6); ctx.lineTo(X, Y - 2 * SK + 6); ctx.closePath(); ctx.fill(); ctx.restore();
     if (kc && kc.width) {
       try {
-        ctx.save(); ctx.setTransform(SW / kc.width, -SK / kc.width, 0, KH / kc.height, X - SW, Y - SK + SK); // levá stěna
-        ctx.setTransform(SW / kc.width, SK / kc.width, 0, KH / kc.height, X - SW, Y - SK);
+        ctx.save(); ctx.setTransform(SW / kc.width, SK / kc.width, 0, KH / kc.height, X - SW, Y - SK);
         ctx.drawImage(kc, 0, 0); ctx.restore();
         ctx.save(); ctx.setTransform(SW / kc.width, -SK / kc.width, 0, KH / kc.height, X + KW, Y);
         ctx.drawImage(kc, 0, 0); ctx.restore();
@@ -191,15 +186,15 @@
     }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.strokeStyle = "#2a2d34"; ctx.lineWidth = 3; ctx.strokeRect(X, Y, KW, KH);
-    ctx.fillStyle = "rgba(255,255,255,.45)"; ctx.font = "700 13px Inter"; ctx.textAlign = "left"; ctx.fillText("SUPERKOSTKA", X + KW + SW + 14, Y + 40);
-    // ring pod kostkou (vidíme přední polovinu)
+    ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.font = "700 13px Inter"; ctx.textAlign = "left"; ctx.fillText("SUPERKOSTKA", X + KW + SW + 14, Y + 40);
+    // ring pod kostkou
     var rc = cv(F.r), ry = Y + KH + 36;
     ctx.save(); ctx.beginPath(); ctx.ellipse(800, ry, 250, 34, 0, 0, Math.PI); ctx.lineWidth = 20; ctx.strokeStyle = "#000"; ctx.stroke(); ctx.restore();
     ctx.save(); ctx.shadowColor = "rgba(255,255,255,.2)"; ctx.shadowBlur = 14;
     bandArc(rc, 2, 800, ry, 250, 34, 16, Math.PI, 0, 180);
     ctx.restore();
-    ctx.fillStyle = "rgba(255,255,255,.45)"; ctx.fillText("RING", 800 + 262, ry + 4);
-    ctx.textAlign = "left"; ctx.fillText("PÁS NA OCHOZU", 1420, 470);
+    ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.fillText("RING", 800 + 262, ry + 4);
+    ctx.fillText("PÁS NA OCHOZU", 1420, 470);
   }
   function loop(now) {
     if (autoOn && now - lastSwitch > 8000) { lastSwitch = now; apply((cur + 1) % SITS.length); }
