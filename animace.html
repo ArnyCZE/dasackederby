@@ -289,6 +289,8 @@
     { title: "3. třetina", dur: 8, draw: period("3. TŘETINA") },
     { title: "GÓL 8.AB", dur: 5, line: "GÓÓÓL!", draw: goal("8.AB", RED) },
     { title: "GÓL 4.FH", dur: 5, line: "GÓÓÓL!", draw: goal("4.FH", WHITE) },
+    { title: "Přesilovka 8.AB", dur: 8, line: "PŘESILOVKA 8.AB  ·  OSLABENÍ 4.FH", draw: powerPlay("8.AB", RED, "4.FH", WHITE) },
+    { title: "Přesilovka 4.FH", dur: 8, line: "PŘESILOVKA 4.FH  ·  OSLABENÍ 8.AB", draw: powerPlay("4.FH", WHITE, "8.AB", RED) },
     { title: "Přestávka · krasobruslaři", dur: 8, line: "BUFET NA TRIBUNĚ  ·  VSTUPNÉ DOBROVOLNÉ", draw: pause("VYSTOUPENÍ KRASOBRUSLAŘŮ") },
     { title: "Přestávka · nafukovačky", dur: 8, line: "BUFET NA TRIBUNĚ  ·  VSTUPNÉ DOBROVOLNÉ", draw: pause("ZÁVOD NA NAFUKOVAČKÁCH") },
     { title: "Samostatné nájezdy", dur: 8, draw: std(function (ctx, w, h, p) {
@@ -341,6 +343,28 @@
       T(ctx, "DAŠÁCKÉ DERBY  ·  8.AB VS 4.FH", w / 2, 860, 60, { color: MUTED, spacing: 4, alpha: S(p, .24, .34) });
     });
   }
+  // přesilovka jednoho týmu = oslabení druhého
+  function powerPlay(team, color, other, otherColor) {
+    var glow = color === RED ? "rgba(227,38,59,.7)" : "rgba(255,255,255,.5)";
+    return std(function (ctx, w, h, p) {
+      var blink = .55 + .45 * Math.sin(TAU * p * 4);
+      // výstražný pruh nahoře (bliká)
+      ctx.save(); ctx.globalAlpha = S(p, .04, .14) * (.35 + .25 * blink);
+      ctx.fillStyle = RED; ctx.fillRect(0, 150, w, 10); ctx.restore();
+      var a = S(p, .06, .18);
+      T(ctx, "PŘESILOVKA", w / 2, 320, 250, { alpha: a, scale: 1.4 - .4 * a, shine: (p - .4) / .3 });
+      var b = S(p, .14, .26);
+      T(ctx, team, w / 2, 560, 260, { color: color, glow: glow, glowK: .6 + .5 * blink, alpha: b, dx: -(1 - b) * 400 });
+      var c = S(p, .26, .36);
+      T(ctx, "5  NA  4", w / 2, 750, 120, { color: MUTED, alpha: c, spacing: 10 });
+      var d = S(p, .32, .42);
+      ctx.save(); ctx.globalAlpha = d; ctx.font = "800 52px Inter"; ctx.textBaseline = "middle";
+      var l = "OSLABENÍ  ", lw = ctx.measureText(l).width, ow = ctx.measureText(other).width, x = w / 2 - (lw + ow) / 2;
+      ctx.shadowColor = "rgba(0,0,0,.85)"; ctx.shadowBlur = 6;
+      ctx.fillStyle = MUTED; ctx.fillText(l, x, 900); ctx.fillStyle = otherColor; ctx.fillText(other, x + lw, 900);
+      ctx.restore();
+    });
+  }
   function goal(team, color) {
     var glow = color === RED ? "rgba(227,38,59,.85)" : "rgba(255,255,255,.7)";
     return function (ctx, w, h, p) {
@@ -386,6 +410,9 @@
 
   /* ---------- běžící pásy (ring, prstenec) – konce navazují ---------- */
   var PARTS = [["DAŠÁCKÉ DERBY", WHITE], ["   •   ", MUTED], ["8.AB", RED], [" VS ", WHITE], ["4.FH", WHITE], ["   •   ", MUTED], ["GYMNÁZIUM PARDUBICE, DAŠICKÁ", "#c9d4ec"], ["   •   ", MUTED]];
+  function ppParts(team, color, other, otherColor) {
+    return [["PŘESILOVKA ", WHITE], [team, color], ["   •   ", MUTED], ["OSLABENÍ ", MUTED], [other, otherColor], ["   •   ", MUTED], ["5 NA 4", WHITE], ["   •   ", MUTED]];
+  }
   function partsWidth(ctx, parts, s) {
     ctx.save(); ctx.font = "400 " + s + "px 'Bebas Neue'"; var t = 0;
     parts.forEach(function (q) { t += ctx.measureText(q[0]).width; }); ctx.restore(); return t;
@@ -401,10 +428,12 @@
     if (n < 1) { s = s * w / uw * .97; uw = partsWidth(ctx, parts, s); n = 1; }
     return { s: s, uw: uw, n: n, slot: w / n };
   }
-  function scrollBand(ctx, w, h, p) {
+  function scrollBand(ctx, w, h, p, parts, warn) {
+    parts = parts || PARTS;
     bg(ctx, w, h, 0);
-    var f = fitBand(ctx, w, h, PARTS, Math.round(h * .66)), off = (p * f.slot) % f.slot;
-    for (var i = -1; i <= f.n; i++) drawParts(ctx, PARTS, f.slot * i + f.slot / 2 - off, h / 2, f.s, f.uw);
+    if (warn) { ctx.fillStyle = "rgba(227,38,59," + (.18 + .14 * Math.sin(TAU * p * 4)).toFixed(3) + ")"; ctx.fillRect(0, 0, w, h); }
+    var f = fitBand(ctx, w, h, parts, Math.round(h * .66)), off = (p * f.slot) % f.slot;
+    for (var i = -1; i <= f.n; i++) drawParts(ctx, parts, f.slot * i + f.slot / 2 - off, h / 2, f.s, f.uw);
     var sx = p * w; ctx.save(); ctx.globalCompositeOperation = "lighter";
     [sx - w, sx, sx + w].forEach(function (x) {
       var g = ctx.createRadialGradient(x, h / 2, 0, x, h / 2, h * 2.2);
@@ -489,6 +518,7 @@
     items.push({ group: group, gname: gname, title: title, w: w, h: h, dur: dur, draw: draw, split: !!opt.split, alpha: !!opt.alpha, noVideo: !!opt.noVideo });
   }
   function sceneBy(t) { for (var i = 0; i < scenes.length; i++) if (scenes[i].title === t) return scenes[i]; return scenes[0]; }
+  var PP_AB = ppParts("8.AB", RED, "4.FH", WHITE), PP_FH = ppParts("4.FH", WHITE, "8.AB", RED);
   var G1 = "Kostka · 1920 × 1080";
   scenes.forEach(function (s) { add("kostka", G1, "Jedna scéna na každou část večera. Logo školy je vlevo nahoře.", s.title, 1920, 1080, s.dur, function (ctx, p) { s.draw(ctx, 1920, 1080, p); }); });
   var G2 = "Superkostka · vršek 1920 × 1080 + spodek 1920 × 288";
@@ -503,9 +533,13 @@
   var G4 = "Ring pod kostkou · 2560 × 128";
   add("ring", G4, "Obrázek se na ringu zobrazí 2× dokola, levý a pravý konec na sebe navazují.", "Běžící pás", 2560, 128, 10, function (ctx, p) { scrollBand(ctx, 2560, 128, p); });
   add("ring", G4, "", "GÓL (blikající)", 2560, 128, 4, function (ctx, p) { goalBand(ctx, 2560, 128, p); });
+  add("ring", G4, "", "Přesilovka 8.AB", 2560, 128, 8, function (ctx, p) { scrollBand(ctx, 2560, 128, p, PP_AB, true); });
+  add("ring", G4, "", "Přesilovka 4.FH", 2560, 128, 8, function (ctx, p) { scrollBand(ctx, 2560, 128, p, PP_FH, true); });
   var G5 = "Prstenec · celý 15 712 × 128";
   add("prstenec", G5, "1/4 kolečka = 3 928 × 128, technik ji pustí 4× dokola. Polovina = 7 856 × 128. Celý prstenec je jen jako obrázek PNG, na video je moc široký.", "1/4 kolečka · běžící pás", 3928, 128, 10, function (ctx, p) { scrollBand(ctx, 3928, 128, p); });
   add("prstenec", G5, "", "1/4 kolečka · GÓL", 3928, 128, 4, function (ctx, p) { goalBand(ctx, 3928, 128, p); });
+  add("prstenec", G5, "", "1/4 kolečka · přesilovka 8.AB", 3928, 128, 8, function (ctx, p) { scrollBand(ctx, 3928, 128, p, PP_AB, true); });
+  add("prstenec", G5, "", "1/4 kolečka · přesilovka 4.FH", 3928, 128, 8, function (ctx, p) { scrollBand(ctx, 3928, 128, p, PP_FH, true); });
   add("prstenec", G5, "", "1/2 kolečka (PNG)", 7856, 128, 10, repeated(scrollBand, 3928, 2), { noVideo: true });
   add("prstenec", G5, "", "Celé kolečko (PNG)", 15712, 128, 10, repeated(scrollBand, 3928, 4), { noVideo: true });
   var G6 = "LED obrazovka sever · 1660 × 256";
