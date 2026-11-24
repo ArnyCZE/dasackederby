@@ -8,3 +8,8 @@ s = s.replace('<section class="section led-sec" id="led">', '<section class="sec
 s = s.replace(/\s*<a href="#bufet">Bufet<\/a>/, "").replace(/\s*<a href="#led">Grafika<\/a>/, "");
 fs.writeFileSync("index.html", s);
 console.log("identita:", s.includes("identity.css"), "| bufet skrytý:", s.includes('id="bufet" hidden'), "| grafika skrytá:", s.includes('id="led" hidden'), "| v menu:", s.includes('href="#bufet"'), s.includes('href="#led"'));
+
+// Arnošt 24. 11.: „ročníky“ místo „gymnázium“
+{ let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/Osmileté gymnázium/g, "Osmileté ročníky").replace(/Čtyřleté gymnázium/g, "Čtyřleté ročníky");
+  fs.writeFileSync("index.html", t); console.log("ročníky:", t.includes("Osmileté ročníky"), t.includes("Čtyřleté ročníky")); }
