@@ -1,0 +1,8 @@
+{
+  "name": "dasackederby",
+  "private": true,
+  "scripts": {
+    "postinstall": "node stahni-videa.js",
+    "build": "node -e \"console.log(require('fs').readdirSync('video').length + ' souborů ve video/')\""
+  }
+}

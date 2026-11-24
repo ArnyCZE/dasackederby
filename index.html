@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Dašácké derby 2026 · 8.AB vs 4.FH · enteria arena Pardubice</title>
-<meta name="description" content="Dašácké derby: 8.AB proti 4.FH. Čtyři třídy, dva týmy, jedno utkání, jediný vítěz. Úterý 1. 12. 2026 od 19:00, enteria arena Pardubice. Vstupné dobrovolné.">
+<title>Dašácké derby 2026 · 8. AB vs 4. FH · enteria arena Pardubice</title>
+<meta name="description" content="Dašácké derby: 8. AB proti 4. FH. Čtyři třídy, dva týmy, jedno utkání, jediný vítěz. Úterý 1. 12. 2026, enteria arena Pardubice. Vstupné dobrovolné.">
 <meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Dašácké derby · 8.AB vs 4.FH · 1. 12. 2026">
-<meta property="og:description" content="Čtyři třídy. Dva týmy. Jedno utkání. Jediný vítěz. Úterý 1. 12. 19:00, enteria arena. Vstupné dobrovolné.">
+<meta property="og:title" content="Dašácké derby · 8. AB vs 4. FH · 1. 12. 2026">
+<meta property="og:description" content="Čtyři třídy. Dva týmy. Jedno utkání. Jediný vítěz. Úterý 1. 12., enteria arena. Vstupné dobrovolné.">
 <meta property="og:image" content="https://arnycze.github.io/dasackederby/plakat2.jpg">
 <link rel="icon" href="https://graph.facebook.com/gypce.cz/picture?type=small">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="led.css?v=1">
 </head>
 <body class="poster-theme">
 
@@ -37,6 +38,7 @@
       <a href="#misto">Místo</a>
       <a href="#bufet">Bufet</a>
       <a href="#podpora">Vstupné</a>
+      <a href="#led">Grafika</a>
       <a class="ig-btn" href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>@hokejdasak</a>
     </nav>
     <button class="burger" id="burger" aria-label="Otevřít menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
@@ -49,8 +51,8 @@
     <p class="ph-tagline">Čtyři třídy. Dva týmy. Jedno utkání. Jediný vítěz.</p>
     <div class="ph-art" aria-hidden="true"><img src="plakat2.jpg" alt=""></div>
     <h1 class="ph-title">Dašácké derby</h1>
-    <p class="ph-match"><span class="a">8.AB</span><span class="vs">VS</span><span class="b">4.FH</span></p>
-    <p class="ph-when">Úterý 1.12. 19:00<br>Enteria aréna</p>
+    <p class="ph-match"><span class="a">8. AB</span><span class="vs">VS</span><span class="b">4. FH</span></p>
+    <p class="ph-when">Úterý 1. 12.<br>Enteria aréna</p>
     <p class="ph-fee">Vstupné dobrovolné</p>
 
     <div class="ph-count" aria-label="Do začátku zbývá">
@@ -71,17 +73,17 @@
     <div class="container">
       <div class="sec-head">
         <p class="kicker">Zápas</p>
-        <h2><span class="red">8.AB</span> vs 4.FH</h2>
+        <h2><span class="red">8. AB</span> vs 4. FH</h2>
         <p class="lead">Osmileté proti čtyřletým. Jeden večer, jeden led, jedno derby. Maturanti se utkají na tři třetiny o pohár a o to hlavní: kdo bude mít na Dašáku poslední slovo.</p>
       </div>
       <div class="teams">
         <article class="team team-a">
-          <header><span class="tag">Osmileté gymnázium</span><h3>8.AB</h3></header>
+          <header><span class="tag">Osmileté gymnázium</span><h3>8. AB</h3></header>
           <ul class="roster"><li class="tba">Soupiska bude zveřejněna před zápasem</li></ul>
         </article>
         <div class="vs-big" aria-hidden="true">VS</div>
         <article class="team team-b">
-          <header><span class="tag">Čtyřleté gymnázium</span><h3>4.FH</h3></header>
+          <header><span class="tag">Čtyřleté gymnázium</span><h3>4. FH</h3></header>
           <ul class="roster"><li class="tba">Soupiska bude zveřejněna před zápasem</li></ul>
         </article>
       </div>
@@ -166,6 +168,27 @@
         <p class="acc" id="acc"></p>
       </div>
       <div class="qr-card"><div id="qr"></div><p id="qr-note">QR platba</p></div>
+    </div>
+  </section>
+
+  <section class="section led-sec" id="led">
+    <div class="container led-wrap">
+      <div class="led-screen">
+        <span class="led-live">LIVE</span>
+        <video src="video/kostka_uvod-plakat.mp4" autoplay loop muted playsinline></video>
+        <video src="video/spodek_uvod-plakat.mp4" autoplay loop muted playsinline></video>
+      </div>
+      <div>
+        <div class="sec-head">
+          <p class="kicker">Na obrazovkách</p>
+          <h2>Grafika v hale</h2>
+          <p class="lead">Během zápasu poběží na kostce nad ledem, na ringu i na ochozu vlastní grafika derby: nástup týmů, třetiny, góly, přesilovky, přestávky i vyhlášení vítěze.</p>
+        </div>
+        <div class="led-links">
+          <a class="btn btn-primary" href="vizualizace.html">Vizualizace v hale <svg><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-outline" href="videa.html">Všechna videa</a>
+        </div>
+      </div>
     </div>
   </section>
 

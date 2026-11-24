@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grafika na LED · Dašácké derby · enteria arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --red: #ff1f2d; --navy: #10113b; }
+  body { margin: 0; color: #f4f5f7; font-family: Inter, system-ui, sans-serif;
+    background: radial-gradient(ellipse at 50% -10%, rgba(38,42,140,.55), transparent 60%), #05050a; min-height: 100vh; }
+  header, main { max-width: 1240px; margin: 0 auto; padding: 0 1.2rem; }
+  header { padding-top: 2.2rem; }
+  .tag { display: inline-flex; align-items: center; gap: .5rem; background: rgba(6,7,30,.8); border: 1px solid rgba(255,255,255,.12); padding: .35rem .8rem; transform: skewX(-12deg); font-weight: 800; font-size: .8rem; letter-spacing: .08em; }
+  .tag > * { transform: skewX(12deg); }
+  .tag b { background: var(--red); padding: .1rem .5rem; }
+  h1 { font-family: "Bebas Neue"; font-weight: 400; font-size: clamp(2.6rem, 7vw, 5rem); margin: .6rem 0 0; letter-spacing: .02em; line-height: .95; }
+  h1 em { font-style: normal; color: var(--red); }
+  h2 { font-family: "Bebas Neue"; font-weight: 400; font-size: 2.1rem; margin: 2.6rem 0 .2rem; display: flex; align-items: center; gap: .8rem; }
+  h2::before { content: ""; width: 10px; height: 1.6rem; background: var(--red); transform: skewX(-14deg); }
+  .muted { color: #a6a6a6; font-size: .92rem; line-height: 1.55; max-width: 760px; }
+  a { color: #ff6b7a; }
+  .btn { display: inline-block; background: var(--red); color: #fff; text-decoration: none; font-weight: 800; padding: .7rem 1.2rem; transform: skewX(-12deg); margin: .8rem .6rem 0 0; }
+  .btn span { display: inline-block; transform: skewX(12deg); }
+  .btn.alt { background: #1b1d3e; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.2rem; }
+  .card { background: rgba(10,11,30,.85); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; overflow: hidden; }
+  .card video { display: block; width: 100%; background: #000; }
+  .card .cap { padding: .6rem .8rem; font-weight: 700; font-size: .92rem; display: flex; justify-content: space-between; gap: .5rem; }
+  .card .cap small { color: #a6a6a6; font-weight: 600; }
+  .wide { grid-column: 1 / -1; }
+  .stack video + video { border-top: 2px solid #000; }
+  .chk { background: repeating-conic-gradient(#2a2a2a 0 25%, #1c1c1c 0 50%) 0 0 / 24px 24px; }
+  footer { height: 4rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="tag"><b>LIVE</b><span>1. 12. 2026 · ENTERIA ARÉNA</span></div>
+  <h1>Dašácké derby<br><em>grafika na LED</em></h1>
+  <p class="muted">Všechna videa, která poběží na obrazovkách v enteria areně. Každé je smyčka, konec navazuje na začátek. Tady jsou ve zmenšené kvalitě na ukázku, plné rozlišení má technik.</p>
+  <a class="btn" href="vizualizace.html"><span>▶ Vizualizace v hale</span></a><a class="btn alt" href="index.html"><span>Zpět na web</span></a>
+</header>
+<main id="m"></main>
+<footer></footer>
+<script>
+(function () {
+  var T = {
+    "gymnazium-uvadi": "Gymnázium uvádí", "uvod-plakat": "Úvod", "osmileti-vs-ctyrleti": "Osmiletí vs čtyřletí", "nastup-tymu": "Nástup týmů",
+    "1-tretina": "1. třetina", "2-tretina": "2. třetina", "3-tretina": "3. třetina", "gol-8-ab": "GÓL 8. AB", "gol-4-fh": "GÓL 4. FH",
+    "presilovka-8-ab": "Přesilovka 8. AB", "presilovka-4-fh": "Přesilovka 4. FH", "prestavka-krasobruslari": "Přestávka · krasobruslaři",
+    "prestavka-nafukovacky": "Přestávka · nafukovačky", "prestavka-maturitni-plesy": "Přestávka · maturitní plesy", "samostatne-najezdy": "Samostatné nájezdy",
+    "vitez-8-ab": "Vítěz 8. AB", "vitez-4-fh": "Vítěz 4. FH", "instagram": "Instagram", "vstupne-dobrovolne": "Vstupné dobrovolné", "dekujeme": "Děkujeme",
+    "bezici-pas": "Běžící pás", "gol": "GÓL", "zakladni-grafika": "Základní grafika", "kiss-cam": "Kiss cam", "clap": "CLAP!"
+  };
+  var ORDER = ["gymnazium-uvadi", "uvod-plakat", "osmileti-vs-ctyrleti", "nastup-tymu", "1-tretina", "2-tretina", "3-tretina", "gol-8-ab", "gol-4-fh", "presilovka-8-ab", "presilovka-4-fh", "prestavka-krasobruslari", "prestavka-nafukovacky", "prestavka-maturitni-plesy", "samostatne-najezdy", "vitez-8-ab", "vitez-4-fh", "instagram", "vstupne-dobrovolne", "dekujeme"];
+  var m = document.getElementById("m");
+  function v(src) { return '<video src="video/' + src + '.mp4" autoplay loop muted playsinline preload="metadata"></video>'; }
+  function section(title, note, html) { m.insertAdjacentHTML("beforeend", "<h2>" + title + "</h2>" + (note ? '<p class="muted">' + note + "</p>" : "") + '<div class="grid">' + html + "</div>"); }
+  function card(inner, name, size, cls) { return '<div class="card ' + (cls || "") + '">' + inner + '<div class="cap"><span>' + name + "</span><small>" + size + "</small></div></div>"; }
+  section("Superkostka nad ledem", "Vršek 1920 × 1080 a pod ním spodní pás 1920 × 288, obojí běží současně.",
+    ORDER.map(function (k) { return card('<div class="stack">' + v("kostka_" + k) + v("spodek_" + k) + "</div>", T[k], "1920 × 1368"); }).join(""));
+  section("Ring pod kostkou", "2560 × 128, v hale se zobrazí dvakrát dokola.",
+    ["bezici-pas", "gol", "presilovka-8-ab", "presilovka-4-fh"].map(function (k) { return card(v("ring_" + k), T[k], "2560 × 128", "wide"); }).join(""));
+  section("Prstenec na ochozu", "Čtvrtina kolečka 3928 × 128, pouští se čtyřikrát za sebou.",
+    ["bezici-pas", "gol", "presilovka-8-ab", "presilovka-4-fh"].map(function (k) { return card(v("prstenec_" + k), T[k], "3928 × 128", "wide"); }).join(""));
+  section("Panel sever", "", card(v("panel-sever_zakladni-grafika"), "Základní grafika", "1660 × 256", "wide"));
+  section("Kiss cam a CLAP", "Technik je má s průhledným pozadím přes obraz z kamery. Tady jsou na černém pozadí.",
+    card(v("kiss-cam_kiss-cam"), "Kiss cam", "1920 × 1080") + card(v("clap_clap"), "CLAP!", "1920 × 1080"));
+  // šetřit telefon: přehrávat jen videa, která jsou vidět
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { var p = e.target.play(); if (p && p.catch) p.catch(function () {}); } else e.target.pause(); }); }, { rootMargin: "200px" });
+    document.querySelectorAll("video").forEach(function (x) { x.removeAttribute("autoplay"); io.observe(x); });
+  }
+})();
+</script>
+</body>
+</html>

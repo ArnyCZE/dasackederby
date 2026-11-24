@@ -16,22 +16,22 @@
   #view { display: block; width: 100%; height: auto; border-radius: 10px; background: #000; margin-top: .8rem; }
   .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin: .9rem 0; }
   button { font: 700 .85rem Inter; padding: .6rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); background: #17191e; color: #fff; cursor: pointer; }
-  button.on { background: #e3263b; border-color: #e3263b; }
+  button.on { background: #ff1f2d; border-color: #ff1f2d; }
   #status { font-weight: 700; min-height: 1.3em; }
-  iframe.src { position: fixed; left: 0; top: 0; width: 360px; height: 420px; opacity: .01; pointer-events: none; z-index: -1; border: 0; }
 </style>
 </head>
 <body>
 <header>
   <h1>Dašácké derby · vizualizace v hale</h1>
-  <p class="muted">Orientační náhled, jak budou naše animace vypadat na obrazovkách v enteria areně: superkostka nad ledem, ring pod ní, pás na ochozu a panel sever. Hala je nakreslená schematicky, rozměry obrazovek odpovídají technickým parametrům haly. Grafiku ke stažení najdeš na stránce <a href="animace.html">animace.html</a>. Nejlépe to běží na počítači. Zvuky se pustí po kliknutí na situaci.</p>
+  <p class="muted">Náhled, jak budou skutečná videa pro LED vypadat na obrazovkách v enteria areně: superkostka nad ledem, ring pod ní, pás na ochozu a panel sever. Hala je nakreslená schematicky. Všechna videa zvlášť najdeš na stránce <a href="videa.html">videa.html</a>. Zvuky se pustí po kliknutí na situaci.</p>
 </header>
 <main>
   <canvas id="view" width="1600" height="900"></canvas>
-  <p id="status" class="muted">Načítám animace…</p>
+  <p id="status" class="muted">Načítám videa…</p>
   <div class="chips" id="sit"></div>
   <div class="chips"><button id="auto">Automaticky střídat situace</button><button id="snd" class="on">🔊 Zvuk zapnutý</button></div>
 </main>
+<script src="viz-src.js"></script>
 <script>
 (function () {
   var W = 1600, H = 900, TAU = Math.PI * 2;
@@ -55,7 +55,7 @@
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a);
     g.gain.setValueAtTime(peak, t + a + hold); g.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + rel);
   }
-  function horn(t, dur) { // gólová siréna
+  function horn(t, dur) {
     var g = AC.createGain(), f = AC.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1400;
     f.connect(g); g.connect(master); env(g, t, .06, .32, dur, .5);
     [110, 138.6, 164.8, 220].forEach(function (fr, i) {
@@ -63,7 +63,7 @@
       o.connect(f); o.start(t); o.stop(t + dur + .7);
     });
   }
-  function crowd(t, dur, peak) { // fandění publika
+  function crowd(t, dur, peak) {
     var s = AC.createBufferSource(); s.buffer = noise(); s.loop = true;
     var bp = AC.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 900; bp.Q.value = .6;
     var lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2800;
@@ -72,7 +72,7 @@
     g.gain.setValueAtTime(peak, t + dur * .5); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     s.start(t); s.stop(t + dur + .1);
   }
-  function whistle(t, dur) { // píšťalka rozhodčího
+  function whistle(t, dur) {
     var o = AC.createOscillator(), l = AC.createOscillator(), lg = AC.createGain(), g = AC.createGain();
     o.type = "sine"; o.frequency.value = 2900; l.frequency.value = 28; lg.gain.value = 180;
     l.connect(lg); lg.connect(o.frequency); o.connect(g); g.connect(master); env(g, t, .02, .16, dur, .08);
@@ -84,8 +84,8 @@
     var g = AC.createGain(); s.connect(bp); bp.connect(g); g.connect(master); env(g, t, .003, .7, .01, .09);
     s.start(t, Math.random() * 3); s.stop(t + .15);
   }
-  function claps(t) { [0, .5, 1.0, 1.25, 1.5].forEach(function (d, i) { clap(t + d); clap(t + d + .012); }); }
-  function organ(t, notes) { // varhany jako na stadionu
+  function claps(t) { [0, .5, 1.0, 1.25, 1.5].forEach(function (d) { clap(t + d); clap(t + d + .012); }); }
+  function organ(t, notes) {
     notes.forEach(function (n) {
       var g = AC.createGain(); g.connect(master); env(g, t + n[1], .01, .12, n[2], .12);
       [1, 2, 3].forEach(function (h, i) {
@@ -106,51 +106,33 @@
     pause: function (t) { whistle(t, .35); whistle(t + .5, .35); whistle(t + 1, .9); },
     win: function (t) { horn(t, 1.8); fanfare(t + 2.1); crowd(t + .1, 8, .3); claps(t + 4); }
   };
-  function play(name) {
-    if (!soundOn || !name || !SOUNDS[name]) return;
-    if (!audio()) return;
-    SOUNDS[name](AC.currentTime + .05);
-  }
+  function play(name) { if (!soundOn || !name || !SOUNDS[name] || !audio()) return; SOUNDS[name](AC.currentTime + .05); }
 
   var SITS = [
-    { n: "Před zápasem", k: "Gymnázium uvádí", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "intro" },
-    { n: "Úvod", k: "Úvod / plakát", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "intro" },
-    { n: "Osmiletí vs čtyřletí", k: "Osmiletí vs čtyřletí", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "pp" },
-    { n: "1. třetina", k: "1. třetina", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "whistle" },
-    { n: "GÓL 8.AB", k: "GÓL 8.AB", r: "GÓL (blikající)", p: "1/4 kolečka · GÓL", s: "goal" },
-    { n: "GÓL 4.FH", k: "GÓL 4.FH", r: "GÓL (blikající)", p: "1/4 kolečka · GÓL", s: "goal" },
-    { n: "Přesilovka 8.AB", k: "Přesilovka 8.AB", r: "Přesilovka 8.AB", p: "1/4 kolečka · přesilovka 8.AB", s: "pp" },
-    { n: "Přesilovka 4.FH", k: "Přesilovka 4.FH", r: "Přesilovka 4.FH", p: "1/4 kolečka · přesilovka 4.FH", s: "pp" },
-    { n: "Přestávka", k: "Přestávka · krasobruslaři", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "pause" },
-    { n: "Vítěz 8.AB", k: "Vítěz 8.AB", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "win" },
-    { n: "Vítěz 4.FH", k: "Vítěz 4.FH", r: "Běžící pás", p: "1/4 kolečka · běžící pás", s: "win" }
+    { n: "Před zápasem", k: "gymnazium-uvadi", r: "bezici-pas", s: "intro" },
+    { n: "Úvod", k: "uvod-plakat", r: "bezici-pas", s: "intro" },
+    { n: "Osmiletí vs čtyřletí", k: "osmileti-vs-ctyrleti", r: "bezici-pas", s: "pp" },
+    { n: "Nástup týmů", k: "nastup-tymu", r: "bezici-pas", s: "intro" },
+    { n: "1. třetina", k: "1-tretina", r: "bezici-pas", s: "whistle" },
+    { n: "GÓL 8. AB", k: "gol-8-ab", r: "gol", s: "goal" },
+    { n: "GÓL 4. FH", k: "gol-4-fh", r: "gol", s: "goal" },
+    { n: "Přesilovka 8. AB", k: "presilovka-8-ab", r: "presilovka-8-ab", s: "pp" },
+    { n: "Přesilovka 4. FH", k: "presilovka-4-fh", r: "presilovka-4-fh", s: "pp" },
+    { n: "Přestávka · krasobruslaři", k: "prestavka-krasobruslari", r: "bezici-pas", s: "pause" },
+    { n: "Přestávka · nafukovačky", k: "prestavka-nafukovacky", r: "bezici-pas", s: "pause" },
+    { n: "Přestávka · plesy", k: "prestavka-maturitni-plesy", r: "bezici-pas", s: "pause" },
+    { n: "Nájezdy", k: "samostatne-najezdy", r: "bezici-pas", s: "pp" },
+    { n: "Vítěz 8. AB", k: "vitez-8-ab", r: "bezici-pas", s: "win" },
+    { n: "Vítěz 4. FH", k: "vitez-4-fh", r: "bezici-pas", s: "win" },
+    { n: "Děkujeme", k: "dekujeme", r: "bezici-pas", s: "intro" }
   ];
-
-  /* každá obrazovka = skrytá kopie stránky s animacemi, ze které se kopíruje obraz */
-  function mk() { var f = document.createElement("iframe"); f.className = "src"; f.src = "animace.html"; document.body.appendChild(f); return f; }
-  var F = { k: mk(), r: mk(), p: mk(), s: mk() };
-  function cv(f) { try { return f.contentDocument.getElementById("cv"); } catch (e) { return null; } }
-  function choose(f, group, title) {
-    var d; try { d = f.contentDocument; } catch (e) { return false; }
-    if (!d) return false;
-    var hs = d.querySelectorAll("#list h3");
-    for (var i = 0; i < hs.length; i++) {
-      if (hs[i].textContent.indexOf(group) !== 0) continue;
-      var el = hs[i].nextElementSibling;
-      while (el && !el.classList.contains("chips")) el = el.nextElementSibling;
-      if (!el) return false;
-      var bs = el.querySelectorAll("button");
-      for (var j = 0; j < bs.length; j++) if (bs[j].textContent === title) { bs[j].click(); return true; }
-    }
-    return false;
-  }
+  var F = VIZ.canvases;
+  function cv(c) { return c; }
   var cur = 0, ready = false;
   function apply(i, withSound) {
-    cur = i; var s = SITS[i];
-    var ok = choose(F.k, "Superkostka", s.k) & choose(F.r, "Ring pod kostkou", s.r) & choose(F.p, "Prstenec", s.p) & choose(F.s, "LED obrazovka sever", "Základní grafika");
+    cur = i; VIZ.show(SITS[i]);
     btns.forEach(function (b, j) { b.classList.toggle("on", j === i); });
-    if (withSound) play(s.s);
-    return !!ok;
+    if (withSound) play(SITS[i].s);
   }
   var sit = document.getElementById("sit"), btns = SITS.map(function (s, i) {
     var b = document.createElement("button"); b.textContent = s.n; b.onclick = function () { autoOn = false; autoBtn.classList.remove("on"); apply(i, true); };
@@ -160,32 +142,27 @@
   autoBtn.onclick = function () { autoOn = !autoOn; autoBtn.classList.toggle("on", autoOn); lastSwitch = performance.now(); if (autoOn) { audio(); apply(cur, true); } };
   var sndBtn = document.getElementById("snd");
   sndBtn.onclick = function () { soundOn = !soundOn; sndBtn.classList.toggle("on", soundOn); sndBtn.textContent = soundOn ? "🔊 Zvuk zapnutý" : "🔇 Zvuk vypnutý"; if (soundOn) audio(); };
-
-  (function wait() {
-    if (apply(cur, false)) { ready = true; stat.textContent = "Vyber situaci ze zápasu:"; return; }
-    setTimeout(wait, 400);
-  })();
+  apply(0, false);
+  (function wait() { if (VIZ.ready()) { ready = true; stat.textContent = "Vyber situaci ze zápasu:"; return; } setTimeout(wait, 300); })();
+  // mobily občas nepustí video samy – rozjede se po prvním dotyku
+  document.addEventListener("click", function () { VIZ.show(SITS[cur]); }, { once: true });
 
   /* ---------- kreslení haly ---------- */
-  // pás obrazovky podél elipsy: rovnoměrně podle délky oblouku (text se nemačká),
-  // každý kousek natočený podle křivky, konce se rozplývají
-  function bandArc(src, cx, cy, rx, ry, bh, a0, a1, N, fade, scroll) {
+  function bandArc(src, cx, cy, rx, ry, bh, a0, a1, N, fade) {
     if (!src || !src.width) return;
     var pts = [], L = [0];
     for (var i = 0; i <= N; i++) { var a = a0 + (a1 - a0) * i / N; pts.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]); }
     for (i = 1; i <= N; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
-    var total = L[N], k = src.height / bh; // zdrojových px na 1 px obrazovky
+    var total = L[N], k = src.height / bh;
     for (i = 0; i < N; i++) {
       var p0 = pts[i], p1 = pts[i + 1], seg = L[i + 1] - L[i];
-      var u = ((L[i] + (scroll || 0)) * k) % src.width, du = seg * k;
+      var u = (L[i] * k) % src.width, du = seg * k;
       var ang = Math.atan2(p1[1] - p0[1], p1[0] - p0[0]);
       var m = Math.min(L[i], total - L[i]), al = fade ? Math.min(1, m / fade) : 1;
       ctx.save(); ctx.globalAlpha = al; ctx.translate(p0[0], p0[1]); ctx.rotate(ang);
       ctx.fillStyle = "#000"; ctx.fillRect(-.5, -bh / 2 - 3, seg + 1, bh + 6);
-      try {
-        if (u + du <= src.width) ctx.drawImage(src, u, 0, du, src.height, 0, -bh / 2, seg + .6, bh);
-        else { var d1 = src.width - u, s1 = d1 / k; ctx.drawImage(src, u, 0, d1, src.height, 0, -bh / 2, s1 + .3, bh); ctx.drawImage(src, 0, 0, du - d1, src.height, s1, -bh / 2, seg - s1 + .6, bh); }
-      } catch (e) {}
+      if (u + du <= src.width) ctx.drawImage(src, u, 0, du, src.height, 0, -bh / 2, seg + .6, bh);
+      else { var d1 = src.width - u, s1 = d1 / k; ctx.drawImage(src, u, 0, d1, src.height, 0, -bh / 2, s1 + .3, bh); ctx.drawImage(src, 0, 0, du - d1, src.height, s1, -bh / 2, seg - s1 + .6, bh); }
       ctx.restore();
     }
   }
@@ -211,7 +188,6 @@
       ctx.beginPath(); ctx.ellipse(800, 640, 560 + k2 * 300, 205 + k2 * 160, 0, 0, TAU);
       ctx.strokeStyle = "rgba(160,20,35," + (.25 + .2 * (r2 % 3 === 0)) + ")"; ctx.lineWidth = 2; ctx.stroke();
     }
-    ctx.save();
     for (var n = 0; n < 900; n++) {
       var a = (n * 2.39996) % TAU, rr = .25 + ((n * 0.6180339) % 1) * .7;
       var x = 800 + Math.cos(a) * (560 + rr * 300), y = 640 + Math.sin(a) * (205 + rr * 160);
@@ -219,7 +195,6 @@
       ctx.fillStyle = n % 5 === 0 ? "rgba(227,38,59,.55)" : n % 3 === 0 ? "rgba(255,255,255,.35)" : "rgba(120,130,150,.35)";
       ctx.fillRect(x, y, 3, 3);
     }
-    ctx.restore();
     ctx.save(); ctx.translate(800, 650); ctx.scale(1, .36);
     ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(-520, -300, 1040, 600, 220); else ctx.rect(-520, -300, 1040, 600);
     var ig = ctx.createRadialGradient(0, 0, 0, 0, 0, 600); ig.addColorStop(0, "#f2f7fb"); ig.addColorStop(1, "#c9d6e2");
@@ -234,46 +209,30 @@
     ctx.fillStyle = gl; ctx.fillRect(540, 560, 520, 180);
   }
   function screens() {
-    // pás na ochozu: protější strana tribuny, rovnoměrně, konce se rozplývají
-    var pc = cv(F.p);
     ctx.save(); ctx.shadowColor = "rgba(255,255,255,.12)"; ctx.shadowBlur = 10;
-    bandArc(pc, 800, 640, 735, 290, 24, Math.PI * 1.08, Math.PI * 1.92, 220, 90);
+    bandArc(F.p, 800, 640, 735, 290, 24, Math.PI * 1.08, Math.PI * 1.92, 220, 90);
     ctx.restore();
-    // panel sever
-    var sc = cv(F.s), PX = 70, PY = 200, PW = 380, PH = PW * 256 / 1660;
+    var sc = F.s, PX = 70, PY = 200, PW = 380, PH = PW * 256 / 1660;
     ctx.save(); ctx.fillStyle = "#000"; ctx.fillRect(PX - 5, PY - 5, PW + 10, PH + 10);
-    ctx.shadowColor = "rgba(255,255,255,.2)"; ctx.shadowBlur = 16;
-    if (sc && sc.width) { try { ctx.drawImage(sc, 0, 0, sc.width, sc.height, PX, PY, PW, PH); } catch (e) {} }
-    ctx.restore();
+    ctx.shadowColor = "rgba(255,255,255,.2)"; ctx.shadowBlur = 16; ctx.drawImage(sc, 0, 0, sc.width, sc.height, PX, PY, PW, PH); ctx.restore();
     ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.font = "700 13px Inter"; ctx.textAlign = "left"; ctx.fillText("PANEL SEVER", PX, PY + PH + 22);
-    // lana kostky
     ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 2;
     [[560, 0, 560, 190], [1040, 0, 1040, 190], [700, 0, 660, 200], [900, 0, 940, 200]].forEach(function (l) { ctx.beginPath(); ctx.moveTo(l[0], l[1]); ctx.lineTo(l[2], l[3]); ctx.stroke(); });
-    // superkostka
-    var kc = cv(F.k), KW = 330, KH = KW * 1368 / 1920, X = 800 - KW / 2, Y = 120, SW = 110, SK = 26;
+    var kc = F.k, KW = 330, KH = KW * 1368 / 1920, X = 800 - KW / 2, Y = 120, SW = 110, SK = 26;
     ctx.save(); ctx.fillStyle = "#050506";
     ctx.beginPath(); ctx.moveTo(X - SW, Y - SK); ctx.lineTo(X, Y); ctx.lineTo(X + KW, Y); ctx.lineTo(X + KW + SW, Y - SK); ctx.lineTo(X + KW, Y - 2 * SK + 6); ctx.lineTo(X, Y - 2 * SK + 6); ctx.closePath(); ctx.fill(); ctx.restore();
-    if (kc && kc.width) {
-      try {
-        ctx.save(); ctx.setTransform(SW / kc.width, SK / kc.width, 0, KH / kc.height, X - SW, Y - SK);
-        ctx.drawImage(kc, 0, 0); ctx.restore();
-        ctx.save(); ctx.setTransform(SW / kc.width, -SK / kc.width, 0, KH / kc.height, X + KW, Y);
-        ctx.drawImage(kc, 0, 0); ctx.restore();
-        ctx.save(); ctx.fillStyle = "rgba(0,0,0,.45)";
-        ctx.beginPath(); ctx.moveTo(X - SW, Y - SK); ctx.lineTo(X, Y); ctx.lineTo(X, Y + KH); ctx.lineTo(X - SW, Y - SK + KH); ctx.closePath(); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(X + KW, Y); ctx.lineTo(X + KW + SW, Y - SK); ctx.lineTo(X + KW + SW, Y - SK + KH); ctx.lineTo(X + KW, Y + KH); ctx.closePath(); ctx.fill();
-        ctx.restore();
-        ctx.save(); ctx.shadowColor = "rgba(255,255,255,.25)"; ctx.shadowBlur = 30;
-        ctx.drawImage(kc, 0, 0, kc.width, kc.height, X, Y, KW, KH); ctx.restore();
-      } catch (e) { ctx.setTransform(1, 0, 0, 1, 0, 0); }
-    }
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.save(); ctx.setTransform(SW / kc.width, SK / kc.width, 0, KH / kc.height, X - SW, Y - SK); ctx.drawImage(kc, 0, 0); ctx.restore();
+    ctx.save(); ctx.setTransform(SW / kc.width, -SK / kc.width, 0, KH / kc.height, X + KW, Y); ctx.drawImage(kc, 0, 0); ctx.restore();
+    ctx.save(); ctx.fillStyle = "rgba(0,0,0,.45)";
+    ctx.beginPath(); ctx.moveTo(X - SW, Y - SK); ctx.lineTo(X, Y); ctx.lineTo(X, Y + KH); ctx.lineTo(X - SW, Y - SK + KH); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X + KW, Y); ctx.lineTo(X + KW + SW, Y - SK); ctx.lineTo(X + KW + SW, Y - SK + KH); ctx.lineTo(X + KW, Y + KH); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    ctx.save(); ctx.shadowColor = "rgba(255,255,255,.25)"; ctx.shadowBlur = 30; ctx.drawImage(kc, 0, 0, kc.width, kc.height, X, Y, KW, KH); ctx.restore();
     ctx.strokeStyle = "#2a2d34"; ctx.lineWidth = 3; ctx.strokeRect(X, Y, KW, KH);
     ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.font = "700 13px Inter"; ctx.textAlign = "left"; ctx.fillText("SUPERKOSTKA", X + KW + SW + 14, Y + 40);
-    // ring pod kostkou (přední polovina)
-    var rc = cv(F.r), ry = Y + KH + 36;
+    var ry = Y + KH + 36;
     ctx.save(); ctx.shadowColor = "rgba(255,255,255,.2)"; ctx.shadowBlur = 14;
-    bandArc(rc, 800, ry, 250, 34, 18, Math.PI * .97, Math.PI * .03, 140, 30);
+    bandArc(F.r, 800, ry, 250, 34, 18, Math.PI * .97, Math.PI * .03, 140, 30);
     ctx.restore();
     ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.fillText("RING", 800 + 262, ry + 4);
     ctx.fillText("PÁS NA OCHOZU", 1390, 420);
@@ -281,8 +240,7 @@
   function loop(now) {
     if (autoOn && now - lastSwitch > 8000) { lastSwitch = now; apply((cur + 1) % SITS.length, true); }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    arena();
-    if (ready) screens();
+    VIZ.update(); arena(); if (ready) screens();
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

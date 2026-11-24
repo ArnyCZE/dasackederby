@@ -1,0 +1,8 @@
+.led-sec { background: radial-gradient(ellipse at 50% 0, rgba(38,42,140,.45), transparent 65%); }
+.led-wrap { display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; align-items: center; }
+.led-screen { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); box-shadow: 0 0 60px rgba(60,80,220,.25); background: #000; }
+.led-screen video { display: block; width: 100%; }
+.led-screen video + video { border-top: 2px solid #000; }
+.led-live { position: absolute; top: 12px; left: 12px; background: #ff1f2d; color: #fff; font: 800 .75rem Inter, sans-serif; letter-spacing: .1em; padding: .25rem .6rem; transform: skewX(-12deg); }
+.led-links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.2rem; }
+@media (max-width: 820px) { .led-wrap { grid-template-columns: 1fr; } }
