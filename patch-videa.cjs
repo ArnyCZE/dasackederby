@@ -14,3 +14,17 @@ if (!s.includes("emoji-cam-usmev")) {
 }
 fs.writeFileSync("videa.html", s);
 console.log("videa.html emoji v2:", s.includes("emoji-cam_emoji-cam-smich"));
+
+// v3: jen 3 zábavné emoji (šílenec, šprt, opička)
+{
+  let t = fs.readFileSync("videa.html", "utf8");
+  if (!t.includes("emoji-cam-sprt")) {
+    const OLD = ["usmev", "jazyk", "sok", "zamilovany", "frajer", "smich"];
+    const NEW = [["silenec", "šílenec 🤪"], ["sprt", "šprt 🤓"], ["opicka", "opička 🙈"]];
+    t = t.replace(OLD.map(k => '"emoji-cam-' + k + '"').join(", "), NEW.map(e => '"emoji-cam-' + e[0] + '"').join(", "));
+    t = t.replace(/"emoji-cam-usmev": [^\n]*?"emoji-cam-smich": "[^"]*",/, NEW.map(e => '"emoji-cam-' + e[0] + '": "Emoji cam · ' + e[1] + '",').join(" "));
+    t = t.replace(/card\(v\("emoji-cam_emoji-cam-usmev"\).*?card\(v\("emoji-cam_emoji-cam-smich"\), "[^"]*", "1920 × 1080"\)/, NEW.map(e => 'card(v("emoji-cam_emoji-cam-' + e[0] + '"), "Emoji cam · ' + e[1] + '", "1920 × 1080")').join(" + "));
+    fs.writeFileSync("videa.html", t);
+  }
+  console.log("videa.html emoji v3:", t.includes("emoji-cam_emoji-cam-opicka") && !t.includes("emoji-cam-usmev"));
+}
