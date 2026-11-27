@@ -291,3 +291,11 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("citáty nahoře:", (t.match(/cq-top/g) || []).length);
 }
+
+// LIVE tečka: plynulé pulzování místo skokového blikání
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("@keyframes livepulse")) t = t.replace("</head>", '<style>@keyframes livepulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}.live-tag b::before{animation:livepulse 1.6s ease-in-out infinite!important;will-change:opacity,transform}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("live plynule:", t.includes("livepulse"));
+}
