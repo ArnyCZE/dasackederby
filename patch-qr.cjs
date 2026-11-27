@@ -317,3 +317,5 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("sprite v2:", t.includes("hraci.jpg?v=2"), "| velikost hraci.jpg:", fs.statSync("hraci.jpg").size);
 }
+
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/url\(hraci\.jpg\?v=\d+\)/g, "url(hraci.jpg?v=3)"); fs.writeFileSync("index.html", t); console.log("sprite v3:", t.includes("hraci.jpg?v=3")); }
