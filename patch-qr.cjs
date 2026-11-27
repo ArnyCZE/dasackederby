@@ -511,3 +511,40 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("soupiska kompakt + animace:", t.includes("f-tabs2"), t.includes("formace.js?v=2"));
 }
+
+// Arnošt 27. 11. 23:09: FAQ k zápasu (pod sekcí Místo)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  const Q = [
+    ["Kdy a kde se derby hraje?", "V úterý 1. 12. 2026 v enteria areně v Pardubicích. Vstup do haly je od 19:00, zápas začíná v 19:30."],
+    ["Kudy se do haly vchází?", "Vchod je z parkoviště zezadu, od parkovacího domu."],
+    ["Kdo může přijít?", "Úplně všichni. Studenti, rodiče, absolventi i veřejnost."],
+    ["Kolik stojí vstup?", "Vstupné je dobrovolné. Přispět můžete na místě přes QR kód v bankovní aplikaci."],
+    ["Bude tam občerstvení?", "Ano. Bufet zajišťují studenti a čeká vás velký výběr pití a dobrot."],
+    ["Můžu si vzít věci na fandění?", "Určitě. Vlajky, transparenty, bubny, trumpety, cokoliv vás napadne. Jen pyrotechnika do haly nesmí."],
+    ["Jak dlouho to celé trvá?", "Hrají se tři třetiny po 30 minutách. Vyhlášení vítězů je kolem 21:30."],
+    ["Co se děje o přestávkách?", "V první přestávce vystoupí krasobruslaři, ve druhé se vyhlašuje tombola."]
+  ];
+  const sec = '\n  <section class="section" id="faq">\n    <div class="container">\n      <div class="sec-head">\n        <p class="kicker">FAQ</p>\n        <h2>Časté otázky</h2>\n      </div>\n      <div class="faq">' +
+    Q.map(q => '<details><summary>' + q[0] + '</summary><div class="faq-a"><p>' + q[1] + '</p></div></details>').join("") +
+    '</div>\n    </div>\n  </section>\n';
+  t = t.replace(/\n  <section class="section" id="faq">[\s\S]*?<\/section>\n/, "\n");
+  t = t.replace('\n  <section class="section" id="podpora">', sec + '\n  <section class="section" id="podpora">');
+  if (!t.includes('<a href="#faq">')) t = t.replace('<a href="#podpora">Vstupné</a>', '<a href="#podpora">Vstupné</a>\n      <a href="#faq">FAQ</a>');
+  if (!t.includes('id="faq-css"')) t = t.replace("</head>", '<style id="faq-css">' +
+    '.faq{max-width:760px;margin:0 auto;display:grid;gap:.55rem}' +
+    '.faq details{background:linear-gradient(180deg,rgba(34,38,120,.6),rgba(6,6,26,.88));border:1px solid rgba(255,255,255,.12);border-left:5px solid #ff1f2d;transition:border-color .25s}' +
+    '.faq details[open]{border-color:rgba(255,255,255,.25);border-left-color:#ff1f2d}' +
+    '.faq summary{list-style:none;cursor:pointer;padding:1rem 3rem 1rem 1.2rem;position:relative;font-weight:800;font-size:1.02rem}' +
+    '.faq summary::-webkit-details-marker{display:none}' +
+    '.faq summary::after{content:"+";position:absolute;right:1.1rem;top:50%;transform:translateY(-50%);font:400 1.8rem/1 "Bebas Neue",Impact,sans-serif;color:#ff1f2d;transition:transform .3s}' +
+    '.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}' +
+    '.faq summary:hover{background:rgba(255,255,255,.04)}' +
+    '.faq-a{padding:0 1.2rem 1.1rem;color:#d5d9e8;line-height:1.6}' +
+    '.faq details[open] .faq-a{animation:faqIn .35s ease}@keyframes faqIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}' +
+    '@media(max-width:760px){.faq summary{font-size:.95rem;padding:.9rem 2.6rem .9rem 1rem}.faq-a{padding:0 1rem 1rem;font-size:.93rem}}' +
+    '@media(prefers-reduced-motion:reduce){.faq details[open] .faq-a{animation:none}}' +
+    '</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("FAQ:", (t.match(/<details>/g) || []).length, "otázek | v menu:", t.includes('href="#faq"'));
+}
