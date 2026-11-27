@@ -112,3 +112,14 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("AB 2. formace:", t.includes("Bartošová"));
 }
+
+// Reel: místo skriptu Instagramu (blokují ho prohlížeče s ochranou) přímý přehrávač přes iframe + záložní tlačítko
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/<div class="ig-reel"><blockquote[\s\S]*?<\/blockquote><\/div>/,
+    '<div class="ig-reel"><iframe src="https://www.instagram.com/reel/DgPZsuSuLuz/embed/" title="Upoutávka na Dašácké derby" loading="lazy" allowtransparency="true" allowfullscreen scrolling="no"></iframe></div><p class="ig-fallback"><a class="btn btn-outline" href="https://www.instagram.com/reel/DgPZsuSuLuz/" target="_blank" rel="noopener">Nejde přehrát? Otevřít na Instagramu</a></p>');
+  t = t.replace('<script async src="https://www.instagram.com/embed.js"></script>\n', "");
+  t = t.replace(".ig-reel iframe{max-width:540px!important;border-radius:14px!important}", ".ig-reel iframe{width:100%;max-width:400px;height:720px;border:0;border-radius:14px;background:#fff}.ig-fallback{text-align:center;margin-top:1rem}");
+  fs.writeFileSync("index.html", t);
+  console.log("reel iframe:", t.includes("DgPZsuSuLuz/embed/"), "| blockquote pryč:", !t.includes("instagram-media"));
+}
