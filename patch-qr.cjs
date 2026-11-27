@@ -424,3 +424,5 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   t = t.replace(/<style id="hero-big">[\s\S]*?<\/style>\n/, "").replace(/hraci-hero\.png\?v=\d+/g, "hraci-hero.png?v=4");
   fs.writeFileSync("index.html", t); console.log("úvod zpět v2:", !t.includes("hero-big"));
 }
+
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/hraci-hero\.png\?v=\d+/g, "hraci-hero.png?v=5"); fs.writeFileSync("index.html", t); console.log("hráči v1 zpět (v=5):", t.includes("hraci-hero.png?v=5")); }
