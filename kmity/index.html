@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Kmitavý pohyb · 3D laboratoř</title>
+<link rel="stylesheet" href="style.css?v=1">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header>
+  <h1>Kmitavý pohyb</h1>
+  <p>3D laboratoř na test z fyziky. Scénou otáčej myší nebo prstem, závaží a kuličky můžeš chytit a pustit, posuvníky měníš hodnoty. Dole klikni na úlohu z testu a laboratoř se nastaví přesně podle zadání.</p>
+</header>
+<nav id="tabs"></nav>
+<main>
+  <section id="stage">
+    <div id="view"><div id="hint">táhni = otáčení · kolečko / dva prsty = přiblížení · závaží můžeš chytit</div></div>
+    <div id="ctrl">
+      <button id="play" type="button">⏸ Pauza</button>
+      <button id="reset" type="button">↺ Pustit znovu</button>
+      <label>Rychlost času
+        <select id="speed">
+          <option value="2">2×</option>
+          <option value="1" selected>1× (skutečná)</option>
+          <option value="0.5">0,5×</option>
+          <option value="0.25">0,25×</option>
+          <option value="0.1">0,1×</option>
+          <option value="0.01">0,01× (velmi pomalu)</option>
+        </select>
+      </label>
+    </div>
+    <canvas id="graph"></canvas>
+  </section>
+  <aside>
+    <div id="task"></div>
+    <div class="box"><h2>Co tu vidíš</h2><div id="about"></div></div>
+    <div class="box"><h2>Nastavení</h2><div id="sliders"></div></div>
+    <div class="box"><h2>Hodnoty</h2><div id="readouts"></div>
+      <div id="energy">
+        <div class="eb"><span>E<sub>k</sub> pohybová</span><div class="bar"><i id="ebk"></i></div><b id="evk"></b></div>
+        <div class="eb"><span>E<sub>p</sub> polohová</span><div class="bar"><i id="ebp" style="background:#D9663A"></i></div><b id="evp"></b></div>
+        <div class="eb"><span>E celková</span><div class="bar"><i id="ebe" style="background:#C99A2E"></i></div><b id="eve"></b></div>
+      </div>
+      <canvas id="rcurve"></canvas>
+    </div>
+  </aside>
+</main>
+<section id="tasks">
+  <h2>Úlohy z testu</h2>
+  <p>Klikni na úlohu. Laboratoř se nastaví podle zadání. Zkus si to nejdřív spočítat sám, postup a výsledek si odkryješ až potom.</p>
+  <div id="tasklist"></div>
+</section>
+<script type="module" src="app.js?v=1"></script>
+</body>
+</html>
