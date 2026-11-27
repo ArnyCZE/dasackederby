@@ -433,3 +433,25 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   if (!t.includes('id="map-color"')) t = t.replace("</head>", '<style id="map-color">.map iframe{filter:none!important}</style>\n</head>');
   fs.writeFileSync("index.html", t); console.log("mapa barevná:", t.includes("map-color"));
 }
+
+// Arnošt 27. 11. 22:30: úvod zpět jako předtím, BEZ prolínání – výřez plakátu jako dřív (před hero-blend / hraci-hero)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/<style id="hero-blend">[\s\S]*?<\/style>\n/, "");
+  t = t.replace(/<style id="hero-cut">[\s\S]*?<\/style>/, '<style id="hero-cut">.foot-legal{margin-top:1.6rem;text-align:center;color:#8d93a6;font-size:.8rem;line-height:1.6}.foot-legal a{color:#c9cede;text-decoration:underline;text-underline-offset:2px}.foot-legal a:hover{color:#fff}</style>');
+  t = t.replace(/<div class="ph-art" aria-hidden="true"><img src="hraci-hero\.png\?v=\d+" alt=""><\/div>/, '<div class="ph-art" aria-hidden="true"><img src="plakat-hq.jpg" alt=""></div>');
+  fs.writeFileSync("index.html", t);
+  console.log("úvod jako dřív:", !t.includes('id="hero-blend"'), t.includes('<div class="ph-art" aria-hidden="true"><img src="plakat-hq.jpg"'));
+}
+
+// Arnošt 22:31: „dobrý takhle to nech“ – platí verze, co byla živě (hráči v1 = hraci-hero.png?v=5). Předchozí blok se ruší, vše vrátit.
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  const BLEND = '<style id="hero-blend">.ph-faces img{opacity:.42!important;filter:grayscale(.35) brightness(.85) contrast(1.05)!important;mix-blend-mode:lighten;object-position:50% 25%!important;-webkit-mask:linear-gradient(90deg,#000 0,#000 16%,transparent 34%,transparent 66%,#000 84%,#000 100%),linear-gradient(180deg,#000 30%,transparent 85%);-webkit-mask-composite:source-in;mask:linear-gradient(90deg,#000 0,#000 16%,transparent 34%,transparent 66%,#000 84%,#000 100%),linear-gradient(180deg,#000 30%,transparent 85%);mask-composite:intersect}.ph-faces::after{background:radial-gradient(ellipse 60% 70% at 50% 35%,rgba(11,15,34,0),rgba(11,15,34,.6) 100%)!important}.ph-art{position:relative;isolation:isolate}.ph-art::before{content:"";position:absolute;inset:10% 15% 5%;z-index:-1;background:radial-gradient(ellipse at 50% 60%,rgba(255,31,45,.35),transparent 65%);filter:blur(30px)}.ph-art img{mix-blend-mode:lighten;filter:contrast(1.08) saturate(1.05)}.ph-art{-webkit-mask:radial-gradient(ellipse 58% 72% at 50% 46%,#000 45%,transparent 88%)!important;mask:radial-gradient(ellipse 58% 72% at 50% 46%,#000 45%,transparent 88%)!important}</style>\n';
+  const CUT = '<style id="hero-cut">.ph-art{isolation:auto!important;-webkit-mask:none!important;mask:none!important;overflow:visible!important;aspect-ratio:auto!important;width:min(100%,600px)!important;margin-top:.4rem!important}.ph-art::before{display:none!important}.ph-art img{position:static!important;width:100%!important;height:auto!important;top:auto!important;mix-blend-mode:normal!important;filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))!important}.ph-title{margin-top:-.75em!important}@media(max-width:760px){.ph-art{width:104%!important;margin-inline:-2%!important}}.foot-legal{margin-top:1.6rem;text-align:center;color:#8d93a6;font-size:.8rem;line-height:1.6}.foot-legal a{color:#c9cede;text-decoration:underline;text-underline-offset:2px}.foot-legal a:hover{color:#fff}</style>';
+  if (!t.includes('id="hero-blend"')) t = t.replace('<style id="hero-cut">', BLEND + '<style id="hero-cut">');
+  t = t.replace(/<style id="hero-cut">[\s\S]*?<\/style>/, CUT);
+  t = t.replace('<div class="ph-art" aria-hidden="true"><img src="plakat-hq.jpg" alt=""></div>', '<div class="ph-art" aria-hidden="true"><img src="hraci-hero.png?v=5" alt=""></div>');
+  fs.writeFileSync("index.html", t);
+  console.log("úvod = živá verze v1:", t.includes("hraci-hero.png?v=5"), t.includes('id="hero-blend"'), t.includes(".ph-art{isolation:auto"));
+}
