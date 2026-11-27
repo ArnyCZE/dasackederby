@@ -330,3 +330,11 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   for (const f of ["videa.html", "vizualizace.html", "kmity/index.html"]) { if (!fs.existsSync(f)) continue; let h = fs.readFileSync(f, "utf8"); const pre = f.includes("/") ? "../" : ""; if (!h.includes("favicon-32.png")) { h = h.replace(/<link rel="icon"[^>]*>\s*/, ""); h = h.replace("</title>", '</title>\n<link rel="icon" type="image/png" href="' + pre + 'favicon-32.png">\n<link rel="apple-touch-icon" href="' + pre + 'apple-touch-icon.png">'); fs.writeFileSync(f, h); } }
   console.log("favicon:", t.includes("favicon-32.png"), fs.existsSync("favicon-32.png"));
 }
+
+// sekce Místo: bez opakování vstupu a začátku zápasu (jsou nahoře)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/\s*<div><dt>Vstup<\/dt><dd>od 19:00<\/dd><\/div>/, "").replace(/\s*<div><dt>Začátek zápasu<\/dt><dd>19:30<\/dd><\/div>/, "").replace(/\s*<div><dt>Začátek<\/dt><dd>19:00<\/dd><\/div>/, "");
+  fs.writeFileSync("index.html", t);
+  console.log("místo bez časů:", !/<dt>(Vstup|Začátek)/.test(t));
+}
