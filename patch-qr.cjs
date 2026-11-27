@@ -426,3 +426,10 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 }
 
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/hraci-hero\.png\?v=\d+/g, "hraci-hero.png?v=5"); fs.writeFileSync("index.html", t); console.log("hráči v1 zpět (v=5):", t.includes("hraci-hero.png?v=5")); }
+
+// Arnošt 27. 11. 22:30: mapa barevná (bez šedého/invertovaného filtru)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes('id="map-color"')) t = t.replace("</head>", '<style id="map-color">.map iframe{filter:none!important}</style>\n</head>');
+  fs.writeFileSync("index.html", t); console.log("mapa barevná:", t.includes("map-color"));
+}
