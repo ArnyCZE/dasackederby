@@ -383,3 +383,5 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
     '</style>\n</head>');
   fs.writeFileSync("index.html", t); console.log("hero blend:", t.includes("hero-blend"));
 }
+
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=4").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=5").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=5").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=5"); fs.writeFileSync("index.html", t); console.log("logo v4:", t.includes("logo-puk.png?v=4")); }
