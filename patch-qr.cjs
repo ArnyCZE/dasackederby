@@ -104,3 +104,11 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("pay-card:", t.includes("pay-card"), "| save:", t.includes("qr-save.js"));
 }
+
+// 8. AB 2. formace (Arnošt 27. 11.)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("Bartošová")) t = t.replace('<p class="roster-note">3. formace</p><ul class="roster"><li>Weinzettl</li>', '<p class="roster-note">2. formace</p><ul class="roster"><li>Joska (A)</li><li>Bartošová</li><li>Řezka</li><li>Mrva</li><li>Hilbert</li></ul><p class="roster-note">3. formace</p><ul class="roster"><li>Weinzettl</li>');
+  fs.writeFileSync("index.html", t);
+  console.log("AB 2. formace:", t.includes("Bartošová"));
+}
