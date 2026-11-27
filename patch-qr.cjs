@@ -265,3 +265,15 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("led soupisky:", (t.match(/class="rink"/g) || []).length, "formací | hráčů:", (t.match(/class="rp"/g) || []).length);
 }
+
+// oprava QR: globální styl ikon (stroke) obtahoval každý čtvereček → černá skvrna
+{
+  let a = fs.readFileSync("app.js", "utf8");
+  a = a.replace('<path fill="#000" d="', '<path fill="#000" stroke="none" style="stroke:none;stroke-width:0" d="');
+  fs.writeFileSync("app.js", a);
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("#qr svg path{stroke:none")) t = t.replace("</head>", "<style>#qr svg,#qr svg path{stroke:none!important;stroke-width:0!important;fill:#000}</style>\n</head>");
+  t = t.replace(/app\.js\?v=\d+/, "app.js?v=8");
+  fs.writeFileSync("index.html", t);
+  console.log("QR stroke fix:", a.includes('stroke="none"'));
+}
