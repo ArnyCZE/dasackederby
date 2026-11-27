@@ -355,3 +355,10 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 }
 
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/\.ph-art::after\{[^}]*\}/, ""); fs.writeFileSync("index.html", t); console.log("bez odznaku na plakátu:", !t.includes(".ph-art::after")); }
+
+// led i nahoře (úvod + lišta)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("ice-top")) t = t.replace("</head>", '<style id="ice-top">.poster-hero{background:linear-gradient(180deg,rgba(3,3,10,.15),rgba(3,3,10,.55) 85%,rgba(3,3,10,.9)),url(led-textura.jpg) 0 0/700px repeat!important}.ph-faces img{opacity:.3!important}.ph-faces::after{background:radial-gradient(ellipse 45% 55% at 50% 40%,rgba(11,15,34,.05),rgba(11,15,34,.7) 100%)!important}.poster-theme .site-header{background:linear-gradient(rgba(6,8,22,.72),rgba(6,8,22,.72)),url(led-textura.jpg) 0 0/700px repeat!important}</style>\n</head>');
+  fs.writeFileSync("index.html", t); console.log("led nahoře:", t.includes("ice-top"));
+}
