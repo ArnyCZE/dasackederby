@@ -186,3 +186,40 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("řádků s časy:", (t.match(/class="ph-times"/g) || []).length, "| otevření haly:", /Otevření haly/.test(t));
 }
+
+// QR kreslit vlastním čistým SVG (jen tmavé moduly, žádný rámeček/pozadí z knihovny)
+{
+  let a = fs.readFileSync("app.js", "utf8");
+  if (a.includes("qr.createSvgTag")) {
+    a = a.replace('box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });',
+      'var n = qr.getModuleCount(), d = ""; for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) if (qr.isDark(r, c)) d += "M" + c + " " + r + "h1v1h-1z";\n    box.innerHTML = \'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 \' + n + " " + n + \'" shape-rendering="crispEdges" role="img" aria-label="QR platba"><path fill="#000" d="\' + d + \'"/></svg>\';');
+    fs.writeFileSync("app.js", a);
+  }
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/app\.js\?v=\d+/, "app.js?v=7");
+  fs.writeFileSync("index.html", t);
+  console.log("čisté QR SVG:", !a.includes("createSvgTag"));
+}
+
+// Soupisky jako karty hráčů s fotkou (Arnošt 27. 11.); bez věty o posledním slově
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(" Maturanti se utkají na tři třetiny o pohár a o to hlavní: kdo bude mít na Dašáku poslední slovo.", " Maturanti se utkají na tři třetiny o pohár.");
+  const MAP = { cichovsky: 0, janovsky: 1, borovec: 2, smerdova: 3, muller: 4, vozenilek: 5, vesely: 6, kocourek: 7, lazarak: 8, kucera: 9, korel: 10, smolik: 11, vales: 12, komers: 13, herink: 14, nimrichtr: 15, svatos: 16, novak: 17, outrata: 18, korecky: 19, prochazka: 20, weinzettl: 21, cervinka: 22, bartosova: 23, joska: 24, rezka: 25, mrva: 26, hilbert: 27, komersova: 28 };
+  const key = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\(.*?\)/g, "").trim().split(/\s+/).pop();
+  t = t.replace(/<ul class="roster">([\s\S]*?)<\/ul>/g, (m, inner) => {
+    if (inner.includes('class="pl"')) return m;
+    const lis = [...inner.matchAll(/<li>([^<]*)<\/li>/g)].map(x => x[1]);
+    return '<ul class="roster">' + lis.map(n => {
+      const badge = (n.match(/\((C|A)\)/) || [])[1], role = (n.match(/\((hlavní trenér|asistent)\)/) || [])[1];
+      const name = n.replace(/\s*\((C|A|hlavní trenér|asistent)\)/, "").trim(), i = MAP[key(name)];
+      const ph = n.includes("???") ? '<span class="ph q">?</span>'
+        : i != null ? '<span class="ph" style="background-position:' + (i % 6) * 20 + '% ' + Math.floor(i / 6) * 25 + '%"></span>'
+        : '<span class="ph n">' + name.split(/\s+/).map(w => w[0]).join("").slice(0, 2) + "</span>";
+      return '<li class="pl">' + ph + '<span class="nm">' + (name === "???" ? "Tajný hráč" : name) + (role ? "<small>" + role + "</small>" : "") + "</span>" + (badge ? '<b class="bd">' + badge + "</b>" : "") + "</li>";
+    }).join("") + "</ul>";
+  });
+  if (!t.includes(".pl{")) t = t.replace("</head>", '<style>.team{overflow:visible;clip-path:none!important}.roster{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem}.roster-note{text-align:left}.pl{display:flex;align-items:center;gap:.65rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:.45rem .6rem;border-radius:12px;position:relative;min-width:0}.pl .ph{flex:none;width:46px;height:46px;border-radius:50%;background:url(hraci.jpg) no-repeat;background-size:600% 500%;box-shadow:0 0 0 2px rgba(255,255,255,.35)}.team-a .pl .ph{box-shadow:0 0 0 2px #ff1f2d}.pl .ph.q,.pl .ph.n{background:#1b1e4a;display:grid;place-items:center;font-weight:900;color:#fff}.pl .nm{font-weight:700;font-size:.95rem;line-height:1.15;overflow:hidden;text-overflow:ellipsis}.pl .nm small{display:block;font-weight:500;font-size:.75rem;opacity:.7}.pl .bd{position:absolute;top:-6px;left:36px;background:#ff1f2d;color:#fff;font-size:.7rem;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 0 2px #0b0c2a}.team-b .pl .bd{background:#fff;color:#10113b}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("karty hráčů:", (t.match(/class="pl"/g) || []).length, "| poslední slovo:", t.includes("poslední slovo"));
+}

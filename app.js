@@ -80,7 +80,8 @@ var PAY_MESSAGE = "Dasacke derby";
     if (!IBAN || typeof qrcode === "undefined") { box.innerHTML = '<div class="soon">QR kód brzy doplníme</div>'; note.textContent = ""; return; }
     var spd = "SPD*1.0*ACC:" + IBAN + (amount > 0 ? "*AM:" + amount.toFixed(2) : "") + "*CC:CZK*MSG:" + PAY_MESSAGE;
     var qr = qrcode(0, "M"); qr.addData(spd); qr.make();
-    box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+    var n = qr.getModuleCount(), d = ""; for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) if (qr.isDark(r, c)) d += "M" + c + " " + r + "h1v1h-1z";
+    box.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + n + " " + n + '" shape-rendering="crispEdges" role="img" aria-label="QR platba"><path fill="#000" d="' + d + '"/></svg>';
     note.textContent = amount > 0 ? "Příspěvek " + amount + " Kč" : "Částku zadáte v aplikaci";
   }
   buttons.forEach(function (b) {
