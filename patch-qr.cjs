@@ -455,3 +455,20 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("úvod = živá verze v1:", t.includes("hraci-hero.png?v=5"), t.includes('id="hero-blend"'), t.includes(".ph-art{isolation:auto"));
 }
+
+// Arnošt 27. 11. 23:05: soupiska – přepínání mezi formacemi
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes('id="f-tabs"')) t = t.replace("</head>", '<style id="f-tabs">' +
+    '.f-tabs{display:flex;gap:.4rem;margin:1rem 1rem 0;justify-content:center;flex-wrap:wrap}' +
+    '.f-tabs button{font:800 .82rem/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:.6rem 1rem;cursor:pointer;transform:skewX(-12deg);transition:background .2s,border-color .2s}' +
+    '.f-tabs button:hover{border-color:#fff}.f-tabs button.on{background:#ff1f2d;border-color:#ff1f2d}.team-b .f-tabs button.on{background:#fff;border-color:#fff;color:#10113b}' +
+    '.has-tabs .rink{display:none}.has-tabs .rink.on{display:block;animation:fIn .35s ease}' +
+    '@keyframes fIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}' +
+    '@media(max-width:760px){.f-tabs{margin:.8rem .4rem 0}.f-tabs button{flex:1;padding:.65rem .4rem;font-size:.74rem}}' +
+    '@media(prefers-reduced-motion:reduce){.has-tabs .rink.on{animation:none}}' +
+    '</style>\n</head>');
+  if (!t.includes("formace.js")) t = t.replace('<script src="identity.js', '<script src="formace.js?v=1"></script>\n<script src="identity.js');
+  fs.writeFileSync("index.html", t);
+  console.log("záložky formací:", t.includes("formace.js"));
+}
