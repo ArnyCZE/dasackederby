@@ -417,3 +417,10 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   if (!t.includes('id="hero-big"')) t = t.replace("</head>", '<style id="hero-big">.ph-art{width:min(62vw,500px)!important;margin-top:.2rem!important}.ph-title{margin-top:-1.05em!important}@media(max-width:760px){.ph-art{width:78vw!important;margin-inline:auto!important}.ph-title{margin-top:-.95em!important}}</style>\n</head>');
   fs.writeFileSync("index.html", t); console.log("hráči v3 větší:", t.includes("hero-big"));
 }
+
+// Arnošt 27. 11. 22:26: vrátit předchozí úvod (verze 2), větší výřez zrušen
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/<style id="hero-big">[\s\S]*?<\/style>\n/, "").replace(/hraci-hero\.png\?v=\d+/g, "hraci-hero.png?v=4");
+  fs.writeFileSync("index.html", t); console.log("úvod zpět v2:", !t.includes("hero-big"));
+}
