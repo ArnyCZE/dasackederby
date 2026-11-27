@@ -38,3 +38,19 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("videa.html", v);
   console.log("harmonogram:", t.includes("Otevření haly"), t.includes("Vyhlášení vítězů"), "| reel:", t.includes("DgPZsuSuLuz"), "| videa tombola:", v.includes("prestavka-tombola"));
 }
+
+// Arnošt 27. 11.: soupisky (1. formace) a slova kapitánů z Instagramu @hokejdasak
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  const team = (names, quote, who) => '<ul class="roster">' + names.map(n => "<li>" + n + "</li>").join("") + '</ul><p class="roster-note">1. formace</p>' +
+    '<blockquote class="cap-quote"><p>„' + quote + '“</p><cite>' + who + '</cite></blockquote>';
+  const AB = team(["Václav Kocourek (C)", "Veselý", "Lazarák", "Kučera", "Korel", "Smolík"],
+    "Čeká nás těžký zápas, ale jdeme do něj jako jeden tým. 4. FH má špičkového gólmana, ale s naší ofenzívou to nebude mít lehké.", "Václav Kocourek, kapitán 8. AB");
+  const FH = team(["Prokop Janovský (C)", "Šmerdová (A)", "Čichovský", "Borovec", "Müller", "Voženílek"],
+    "Do zápasu proti 8. AB nejdeme jako favorité, ale právě to nám dává šanci všechny překvapit. Každou příležitost chceme proměnit a odejít s výhrou.", "Prokop Janovský, kapitán 4. FH");
+  let n = 0;
+  t = t.replace(/<ul class="roster"><li class="tba">Soupiska bude zveřejněna před zápasem<\/li><\/ul>/g, () => (n++ === 0 ? AB : FH));
+  if (!t.includes(".cap-quote{")) t = t.replace("</head>", '<style>.roster-note{margin:.4rem 0 0;font-size:.8rem;opacity:.6;text-transform:uppercase;letter-spacing:.08em}.cap-quote{margin:1.1rem 0 0;padding:.9rem 1rem;border-left:4px solid #ff1f2d;background:rgba(255,255,255,.05)}.cap-quote p{margin:0;font-size:.95rem;line-height:1.5}.cap-quote cite{display:block;margin-top:.5rem;font-style:normal;font-weight:700;font-size:.85rem;opacity:.8}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("soupisky:", t.includes("Kocourek (C)"), t.includes("Janovský (C)"));
+}
