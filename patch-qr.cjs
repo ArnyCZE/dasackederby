@@ -409,3 +409,11 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 }
 
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/hraci-hero\.png\?v=\d+/g, "hraci-hero.png?v=2"); fs.writeFileSync("index.html", t); console.log("hráči v2:", t.includes("hraci-hero.png?v=2")); }
+
+// Arnošt 27. 11. 22:20: jen hokejisti (bez vnitřních obličejů), větší; obličeje po stranách zůstávají
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/hraci-hero\.png\?v=\d+/g, "hraci-hero.png?v=3");
+  if (!t.includes('id="hero-big"')) t = t.replace("</head>", '<style id="hero-big">.ph-art{width:min(62vw,500px)!important;margin-top:.2rem!important}.ph-title{margin-top:-1.05em!important}@media(max-width:760px){.ph-art{width:78vw!important;margin-inline:auto!important}.ph-title{margin-top:-.95em!important}}</style>\n</head>');
+  fs.writeFileSync("index.html", t); console.log("hráči v3 větší:", t.includes("hero-big"));
+}
