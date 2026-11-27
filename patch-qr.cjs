@@ -367,3 +367,19 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/url\(logo-puk\.png(\?v=\d+)?\)/g, "url(logo-puk.png?v=2)").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=3").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=3").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=3"); fs.writeFileSync("index.html", t); console.log("logo v2:", t.includes("logo-puk.png?v=2")); }
 
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=3").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=4").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=4").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=4"); fs.writeFileSync("index.html", t); console.log("logo v3:", t.includes("logo-puk.png?v=3")); }
+
+// Úvod: plakát nemá působit jako vložený obrázek – jen hráči a tváře po stranách, splynuté s ledem
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("hero-blend")) t = t.replace("</head>", '<style id="hero-blend">' +
+    '.ph-faces img{opacity:.42!important;filter:grayscale(.35) brightness(.85) contrast(1.05)!important;mix-blend-mode:lighten;object-position:50% 25%!important;' +
+    '-webkit-mask:linear-gradient(90deg,#000 0,#000 16%,transparent 34%,transparent 66%,#000 84%,#000 100%),linear-gradient(180deg,#000 30%,transparent 85%);-webkit-mask-composite:source-in;' +
+    'mask:linear-gradient(90deg,#000 0,#000 16%,transparent 34%,transparent 66%,#000 84%,#000 100%),linear-gradient(180deg,#000 30%,transparent 85%);mask-composite:intersect}' +
+    '.ph-faces::after{background:radial-gradient(ellipse 60% 70% at 50% 35%,rgba(11,15,34,0),rgba(11,15,34,.6) 100%)!important}' +
+    '.ph-art{position:relative;isolation:isolate}' +
+    '.ph-art::before{content:"";position:absolute;inset:10% 15% 5%;z-index:-1;background:radial-gradient(ellipse at 50% 60%,rgba(255,31,45,.35),transparent 65%);filter:blur(30px)}' +
+    '.ph-art img{mix-blend-mode:lighten;filter:contrast(1.08) saturate(1.05)}' +
+    '.ph-art{-webkit-mask:radial-gradient(ellipse 58% 72% at 50% 46%,#000 45%,transparent 88%)!important;mask:radial-gradient(ellipse 58% 72% at 50% 46%,#000 45%,transparent 88%)!important}' +
+    '</style>\n</head>');
+  fs.writeFileSync("index.html", t); console.log("hero blend:", t.includes("hero-blend"));
+}
