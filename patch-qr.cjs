@@ -123,3 +123,21 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("reel iframe:", t.includes("DgPZsuSuLuz/embed/"), "| blockquote pryč:", !t.includes("instagram-media"));
 }
+
+// 4. FH realizační tým a náhradníci (Arnošt 27. 11.)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("Nedvěd")) t = t.replace('<li>Svatoš</li></ul>', '<li>Svatoš</li></ul><p class="roster-note">Náhradníci</p><ul class="roster"><li>Komersová</li></ul><p class="roster-note">Trenéři</p><ul class="roster"><li>Nedvěd (hlavní trenér)</li><li>Zeman (asistent)</li></ul>');
+  fs.writeFileSync("index.html", t);
+  console.log("FH trenéři:", t.includes("Nedvěd"));
+}
+
+// Časy: hala otevřena od 19:00, zápas (rozbruslení) od 19:30
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace('<p class="ph-when">Úterý 1. 12.<br>Enteria aréna</p>', '<p class="ph-when">Úterý 1. 12.<br>Enteria aréna</p>\n    <p class="ph-times">Otevření haly 19:00 · začátek zápasu 19:30</p>');
+  t = t.replace('<div><dt>Začátek</dt><dd>19:00</dd></div>', '<div><dt>Otevření haly</dt><dd>19:00</dd></div>\n            <div><dt>Začátek zápasu</dt><dd>19:30</dd></div>');
+  if (!t.includes(".ph-times{")) t = t.replace("</head>", '<style>.ph-times{margin:.5rem 0 0;font-weight:800;font-size:clamp(.95rem,2.2vw,1.2rem);letter-spacing:.06em;text-transform:uppercase;color:#fff}.ph-times::first-line{color:#fff}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("časy:", t.includes("ph-times"), t.includes("Začátek zápasu"));
+}
