@@ -385,3 +385,25 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 }
 
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=4").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=5").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=5").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=5"); fs.writeFileSync("index.html", t); console.log("logo v4:", t.includes("logo-puk.png?v=4")); }
+
+
+// Arnošt 27. 11. večer: hráči v úvodu jako průhledný obrázek (bez černého obdélníku z plakátu), copyright + podmínky akce, vstupné bez „předem“
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  // ikony webu: duplicitní řádky (přidávaly se při každém sestavení) → jen jedna sada
+  const pair = '<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png?v=5">\n<link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">\n';
+  while (t.split(pair).length > 2) t = t.replace(pair, "");
+  t = t.replace("Přispět můžete na místě nebo předem přes QR kód v bankovní aplikaci.", "Přispět můžete na místě přes QR kód v bankovní aplikaci.");
+  t = t.replace('<div class="ph-art" aria-hidden="true"><img src="plakat-hq.jpg" alt=""></div>', '<div class="ph-art" aria-hidden="true"><img src="hraci-hero.png?v=1" alt=""></div>');
+  if (!t.includes('id="hero-cut"')) t = t.replace("</head>", '<style id="hero-cut">' +
+    '.ph-art{isolation:auto!important;-webkit-mask:none!important;mask:none!important;overflow:visible!important;aspect-ratio:auto!important;width:min(100%,600px)!important;margin-top:.4rem!important}' +
+    '.ph-art::before{display:none!important}' +
+    '.ph-art img{position:static!important;width:100%!important;height:auto!important;top:auto!important;mix-blend-mode:normal!important;filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))!important}' +
+    '.ph-title{margin-top:-.75em!important}' +
+    '@media(max-width:760px){.ph-art{width:104%!important;margin-inline:-2%!important}}' +
+    '.foot-legal{margin-top:1.6rem;text-align:center;color:#8d93a6;font-size:.8rem;line-height:1.6}.foot-legal a{color:#c9cede;text-decoration:underline;text-underline-offset:2px}.foot-legal a:hover{color:#fff}' +
+    '</style>\n</head>');
+  if (!t.includes('class="foot-legal"')) t = t.replace('  <p class="credit">Created by AMN</p>', '  <p class="foot-legal">© 2026 Dašácké derby · Gymnázium Pardubice, Dašická 1083 · Všechna práva vyhrazena<br><a href="podminky.html">Podmínky akce a ochrana osobních údajů</a></p>\n  <p class="credit">Created by AMN</p>');
+  fs.writeFileSync("index.html", t);
+  console.log("hráči průhlední:", t.includes("hraci-hero.png"), fs.existsSync("hraci-hero.png"), "| copyright:", t.includes("foot-legal"), "| předem:", t.includes("nebo předem"), "| ikon 512:", t.split("favicon-512.png").length - 1);
+}

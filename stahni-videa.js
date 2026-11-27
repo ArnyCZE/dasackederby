@@ -1,10 +1,11 @@
 // Stáhne balík videí (vyrenderovaných pro LED) z Google Drive a rozbalí do složky video/
-// + plakát, fotky hráčů, ikony webu (nové logo puk), logo puk 1024 a textura ledu
+// + plakát, fotky hráčů, ikony webu (nové logo puk), logo puk 1024, textura ledu, hráči do úvodu (průhledné pozadí)
 const fs = require("fs");
 const ID = "1ae3Xv1gwvur_YlZGnAbf37lGyJI_i4kL";
 const FILES = [["1Kosy9ufuPT-ROMP-YX99KYhiKJGX2F4v", "plakat-hq.jpg"], ["118FBxX3B3ZQjQc9AyFYtDQmZ29EJWPAC", "hraci.jpg"],
   ["1ta6LyGCbI9HkT-8WhQTjrJtCy3FTfX0W", "favicon-512.png"], ["1kUVKT2StqlSZtsfXWcGf0x1AGHg63tys", "apple-touch-icon.png"], ["1XFakNbstiPQxlx9o6cnyfNwuLnTBOhPK", "favicon-32.png"],
-  ["1iIaUnax320UMeWcLm0q-Y_s3pnKlCY4P", "logo-puk.png"], ["1D1Ky5GH5Pa-x20qbPaJpRj1tkAXtYql1", "led-textura.jpg"]];
+  ["1iIaUnax320UMeWcLm0q-Y_s3pnKlCY4P", "logo-puk.png"], ["1D1Ky5GH5Pa-x20qbPaJpRj1tkAXtYql1", "led-textura.jpg"],
+  ["1T-TblYQtxyNJWCFjzNsnN7Hlu_0hLF2A", "hraci-hero.png"]];
 const dl = id => fetch("https://drive.usercontent.google.com/download?id=" + id + "&export=download&confirm=t").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.arrayBuffer(); }).then(a => Buffer.from(a));
 (async () => {
   const b = await dl(ID);
