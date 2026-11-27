@@ -277,3 +277,17 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("QR stroke fix:", a.includes('stroke="none"'));
 }
+
+// Citáty kapitánů nahoru nad formace + fotka kapitána (Arnošt 27. 11.)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  const IDX = { "Václav Kocourek": 7, "Prokop Janovský": 1 };
+  t = t.replace(/(<article class="team [^"]*rink-team">\s*<header>[\s\S]*?<\/header>)([\s\S]*?)<blockquote class="cap-quote"><p>([^<]*)<\/p><cite>([^<]*)<\/cite><\/blockquote>/g, (m, head, mid, q, cite) => {
+    const who = cite.split(",")[0].trim(), i = IDX[who];
+    const ph = i != null ? '<span class="cq-ph" style="background-position:' + (i % 6) * 20 + "% " + Math.floor(i / 6) * 25 + '%"></span>' : "";
+    return head + '<blockquote class="cap-quote cq-top">' + ph + '<div><p>' + q + "</p><cite>" + cite + "</cite></div></blockquote>" + mid;
+  });
+  if (!t.includes(".cq-top{")) t = t.replace("</head>", '<style>.cq-top{display:flex;gap:.9rem;align-items:center;margin:1rem 1rem .2rem!important}.cq-ph{flex:none;width:72px;height:72px;border-radius:50%;background:url(hraci.jpg) no-repeat;background-size:600% 500%;box-shadow:0 0 0 3px #fff}.team-a .cq-ph{box-shadow:0 0 0 3px #ff1f2d}.cq-top div{min-width:0}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("citáty nahoře:", (t.match(/cq-top/g) || []).length);
+}
