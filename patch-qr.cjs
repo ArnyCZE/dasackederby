@@ -223,3 +223,45 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("karty hráčů:", (t.match(/class="pl"/g) || []).length, "| poslední slovo:", t.includes("poslední slovo"));
 }
+
+// v2 soupisek (Arnošt 27. 11.): jako grafika na Instagramu – formace na ledě, fotky na pozicích, jmenovky
+{
+  const MAP = { cichovsky: 0, janovsky: 1, borovec: 2, smerdova: 3, muller: 4, vozenilek: 5, vesely: 6, kocourek: 7, lazarak: 8, kucera: 9, korel: 10, smolik: 11, vales: 12, komers: 13, herink: 14, nimrichtr: 15, svatos: 16, novak: 17, outrata: 18, korecky: 19, prochazka: 20, weinzettl: 21, cervinka: 22, bartosova: 23, joska: 24, rezka: 25, mrva: 26, hilbert: 27, komersova: 28 };
+  const key = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().split(/\s+/).pop();
+  // pořadí na ledě: L, střed, P, obrana L, obrana P, dole
+  const T = {
+    ab: { cls: "team-a", tag: "Osmileté ročníky", name: "8. AB",
+      f: [["Veselý", "Kocourek (C)", "Lazarák", "Kučera", "Korel", "Smolík"], ["Joska (A)", "Bartošová", "Řezka", "Mrva", "Hilbert"], ["Weinzettl", "Červinka", "???"]],
+      extra: [["Trenéři", "Šťastný (hlavní), Plachý (asistent)"]],
+      q: ["Čeká nás těžký zápas, ale jdeme do něj jako jeden tým. 4. FH má špičkového gólmana, ale s naší ofenzívou to nebude mít lehké.", "Václav Kocourek, kapitán 8. AB"] },
+    fh: { cls: "team-b", tag: "Čtyřleté ročníky", name: "4. FH",
+      f: [["Čichovský", "Janovský (C)", "Borovec", "Šmerdová (A)", "Müller", "Voženílek"], ["Outrata", "Novák", "Korecký", "Procházka", "???"], ["Komers", "Valeš", "Herink", "Nimrichtr", "Svatoš"]],
+      extra: [["Náhradníci", "Komersová"], ["Trenéři", "Nedvěd (hlavní), Zeman (asistent)"]],
+      q: ["Do zápasu proti 8. AB nejdeme jako favorité, ale právě to nám dává šanci všechny překvapit. Každou příležitost chceme proměnit a odejít s výhrou.", "Prokop Janovský, kapitán 4. FH"] }
+  };
+  const POS = [[17, 34], [50, 24], [83, 34], [28, 66], [72, 66], [50, 88]];
+  const player = (n, i) => {
+    const nm = n.replace(/\s*\(.\)/, ""), b = (n.match(/\((C|A)\)/) || [])[1], ix = MAP[key(nm)];
+    const ph = n === "???" ? '<span class="ph q">?</span>' : '<span class="ph" style="background-position:' + (ix % 6) * 20 + "% " + Math.floor(ix / 6) * 25 + '%"></span>';
+    return '<div class="rp" style="left:' + POS[i][0] + "%;top:" + POS[i][1] + '%">' + ph + '<span class="tagname">' + nm.toUpperCase() + (b ? " (" + b + ")" : "") + "</span></div>";
+  };
+  const team = d => '<article class="team ' + d.cls + ' rink-team"><header><span class="tag">' + d.tag + '</span><h3>Tým ' + d.name + "</h3></header>" +
+    d.f.map((f, k) => '<div class="rink"><h4>' + (k + 1) + ". formace</h4>" + f.map(player).join("") + "</div>").join("") +
+    '<div class="team-extra">' + d.extra.map(e => "<p><b>" + e[0] + ":</b> " + e[1] + "</p>").join("") + "</div>" +
+    '<blockquote class="cap-quote"><p>„' + d.q[0] + "“</p><cite>" + d.q[1] + "</cite></blockquote></article>";
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/<div class="teams">[\s\S]*<\/article>\s*<\/div>/, '<div class="teams">\n        ' + team(T.ab) + '\n        <div class="vs-big" aria-hidden="true">VS</div>\n        ' + team(T.fh) + "\n      </div>");
+  if (!t.includes(".rink{")) t = t.replace("</head>", '<style>.rink-team{padding-bottom:1rem}.rink-team header h3{font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;font-size:2.6rem;letter-spacing:.02em}.team-a.rink-team header h3{color:#ff1f2d}' +
+    '.rink{position:relative;aspect-ratio:1/1.02;margin:.9rem 1rem 0;border-radius:16px;overflow:hidden;background-color:#eef1f5;' +
+    'background-image:linear-gradient(#d8262f,#d8262f),linear-gradient(#2a5bd7,#2a5bd7),radial-gradient(circle at 50% 12%,transparent 19%,#2a5bd7 19.4%,#2a5bd7 20.2%,transparent 20.6%),radial-gradient(circle at 28% 82%,transparent 15%,#d8262f 15.4%,#d8262f 16.2%,transparent 16.6%),radial-gradient(circle at 72% 82%,transparent 15%,#d8262f 15.4%,#d8262f 16.2%,transparent 16.6%),radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.9),transparent 60%);' +
+    'background-size:100% 3px,100% 4px,100% 100%,100% 100%,100% 100%,100% 100%;background-position:0 12%,0 48%,0 0,0 0,0 0,0 0;background-repeat:no-repeat;box-shadow:inset 0 0 40px rgba(0,0,0,.08)}' +
+    '.rink h4{position:absolute;left:0;right:0;top:2.5%;margin:0;text-align:center;font:900 clamp(.8rem,1.6vw,1rem)/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#111}' +
+    '.rp{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;width:34%}' +
+    '.rp .ph{width:clamp(52px,9vw,84px);aspect-ratio:1;border-radius:50%;background:url(hraci.jpg) no-repeat;background-size:600% 500%;box-shadow:0 6px 14px rgba(0,0,0,.35)}' +
+    '.rp .ph.q{background:#1b1b1b;display:grid;place-items:center;color:#fff;font:900 1.6rem/1 Inter,sans-serif}' +
+    '.rp .tagname{margin-top:-8px;position:relative;background:#fff;color:#111;border:2px solid #111;border-radius:999px;padding:.18rem .55rem;font:800 clamp(.6rem,1.1vw,.78rem)/1.1 Inter,sans-serif;letter-spacing:.03em;white-space:nowrap;box-shadow:0 3px 8px rgba(0,0,0,.2)}' +
+    '.team-extra{margin:1rem 1rem 0;font-size:.92rem}.team-extra p{margin:.25rem 0}.rink-team .cap-quote{margin:1rem 1rem 0}' +
+    '@media(max-width:760px){.rink{margin:.8rem .4rem 0}}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("led soupisky:", (t.match(/class="rink"/g) || []).length, "formací | hráčů:", (t.match(/class="rp"/g) || []).length);
+}
