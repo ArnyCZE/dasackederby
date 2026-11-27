@@ -299,3 +299,13 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("live plynule:", t.includes("livepulse"));
 }
+
+// Klik na 8. AB / 4. FH nahoře → skok na soupisku týmu (+ krátké zvýraznění)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace('<article class="team team-a rink-team">', '<article class="team team-a rink-team" id="tym-8ab">').replace('<article class="team team-b rink-team">', '<article class="team team-b rink-team" id="tym-4fh">');
+  t = t.replace('<span class="a">8. AB</span>', '<a class="a" href="#tym-8ab" title="Soupiska 8. AB">8. AB</a>').replace('<span class="b">4. FH</span>', '<a class="b" href="#tym-4fh" title="Soupiska 4. FH">4. FH</a>');
+  if (!t.includes("@keyframes teamflash")) t = t.replace("</head>", '<style>.ph-match a{text-decoration:none;padding:.35rem 1.4rem;transform:skewX(-12deg);font-weight:900;cursor:pointer;transition:filter .2s,transform .2s}.ph-match a.a{background:#ff1f2d;color:#fff}.ph-match a.b{background:#fff;color:#10113b}.ph-match a:hover{filter:brightness(1.12);transform:skewX(-12deg) translateY(-2px)}#tym-8ab,#tym-4fh{scroll-margin-top:90px}@keyframes teamflash{0%{box-shadow:0 0 0 0 rgba(255,31,45,.9)}100%{box-shadow:0 0 0 22px rgba(255,31,45,0)}}#tym-8ab:target,#tym-4fh:target{animation:teamflash 1.2s ease-out 2}@media(max-width:760px){.ph-match a{padding:.3rem .9rem}}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  console.log("prokliky týmů:", t.includes('href="#tym-8ab"'), t.includes('id="tym-4fh"'));
+}
