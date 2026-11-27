@@ -83,3 +83,24 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("FH 2. formace:", t.includes("Outrata"));
 }
+
+// 8. AB 3. formace (Arnošt 27. 11.), jeden hráč zatím tajný
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("Weinzettl")) t = t.replace("<li>Smolík</li></ul>", '<li>Smolík</li></ul><p class="roster-note">3. formace</p><ul class="roster"><li>Weinzettl</li><li>Červinka</li><li>???</li></ul>');
+  fs.writeFileSync("index.html", t);
+  console.log("AB 3. formace:", t.includes("Weinzettl"));
+}
+
+// Pěkná platební karta s QR + tlačítko uložit jako obrázek
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("pay-card")) {
+    t = t.replace('<div class="qr-card"><div id="qr"></div><p id="qr-note">QR platba</p></div>',
+      '<div class="qr-card pay-card"><div class="pay-head"><b>Dašácké derby</b><span>Vstupné dobrovolné</span></div><div id="qr"></div><p id="qr-note">QR platba</p><p class="pay-acc">Účet 3191753083/0800</p><button id="qr-save" type="button">⬇ Uložit QR jako obrázek</button></div>');
+    t = t.replace("</head>", '<style>.pay-card{background:linear-gradient(180deg,#14163f,#000);border:1px solid rgba(255,255,255,.14);border-top:6px solid #ff1f2d;border-radius:22px;padding:22px 22px 18px;text-align:center;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.5)}.pay-head b{display:block;font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;font-size:2.4rem;line-height:1;color:#fff;letter-spacing:.02em}.pay-head span{display:block;color:#ff1f2d;font-weight:800;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;margin:.3rem 0 1rem}.pay-card #qr{background:#fff;border-radius:16px;padding:14px;width:100%;max-width:300px;margin:0 auto}.pay-card #qr svg{display:block;width:100%;height:auto}.pay-card #qr-note{color:#fff;font-weight:900;font-size:1.5rem;margin:.9rem 0 .2rem}.pay-acc{color:#c9cede;font-size:.9rem;margin:0 0 1rem}#qr-save{font:inherit;font-weight:800;font-size:.9rem;color:#fff;background:#ff1f2d;border:0;border-radius:999px;padding:.7rem 1.2rem;cursor:pointer}#qr-save:hover{filter:brightness(1.1)}</style>\n</head>');
+    t = t.replace('<script src="identity.js', '<script src="qr-save.js?v=1"></script>\n<script src="identity.js');
+  }
+  fs.writeFileSync("index.html", t);
+  console.log("pay-card:", t.includes("pay-card"), "| save:", t.includes("qr-save.js"));
+}
