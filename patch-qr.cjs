@@ -141,3 +141,11 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("časy:", t.includes("ph-times"), t.includes("Začátek zápasu"));
 }
+
+// 8. AB trenéři (Arnošt 27. 11.)
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("Šťastný")) t = t.replace('<li>Červinka</li><li>???</li></ul>', '<li>Červinka</li><li>???</li></ul><p class="roster-note">Trenéři</p><ul class="roster"><li>Šťastný (hlavní trenér)</li><li>Plachý (asistent)</li></ul>');
+  fs.writeFileSync("index.html", t);
+  console.log("AB trenéři:", t.includes("Šťastný"));
+}
