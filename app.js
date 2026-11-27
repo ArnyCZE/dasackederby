@@ -1,7 +1,7 @@
 /* ===== NASTAVENÍ ===== */
 // Číslo účtu pro dobrovolné vstupné (IBAN bez mezer). Dokud je prázdné, místo QR se ukáže „brzy“.
-var IBAN = "";
-var ACCOUNT_LABEL = "";            // např. "123456789/0100" – jen pro zobrazení
+var IBAN = "CZ7208000000003191753083";
+var ACCOUNT_LABEL = "3191753083/0800";            // např. "123456789/0100" – jen pro zobrazení
 var PAY_MESSAGE = "Dasacke derby";
 
 (function () {
