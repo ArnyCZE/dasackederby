@@ -72,3 +72,14 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("formace:", n, "týmy | 3. formace FH:", t.includes("Nimrichtr"));
 }
+
+// 4. FH 2. formace (Arnošt 27. 11.), jeden hráč zatím tajný
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("Outrata")) {
+    const f2 = '<p class="roster-note">2. formace</p><ul class="roster"><li>Novák</li><li>Outrata</li><li>Korecký</li><li>Procházka</li><li>???</li></ul>';
+    t = t.replace('<p class="roster-note">3. formace</p>', f2 + '<p class="roster-note">3. formace</p>');
+  }
+  fs.writeFileSync("index.html", t);
+  console.log("FH 2. formace:", t.includes("Outrata"));
+}
