@@ -309,3 +309,11 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("prokliky týmů:", t.includes('href="#tym-8ab"'), t.includes('id="tym-4fh"'));
 }
+
+// fotky hráčů z originálních SVG (Arnošt 27. 11. večer) – nová verze spritu, obejít cache
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/url\(hraci\.jpg(\?v=\d+)?\)/g, "url(hraci.jpg?v=2)");
+  fs.writeFileSync("index.html", t);
+  console.log("sprite v2:", t.includes("hraci.jpg?v=2"), "| velikost hraci.jpg:", fs.statSync("hraci.jpg").size);
+}
