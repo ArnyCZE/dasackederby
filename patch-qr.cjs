@@ -338,3 +338,20 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("místo bez časů:", !/<dt>(Vstup|Začátek)/.test(t));
 }
+
+// Nové logo (zlaté G s koněm na puku) + pozadí s texturou ledu; červená zůstává
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes("ice-theme")) t = t.replace("</head>", '<style id="ice-theme">' +
+    'body.poster-theme::before{background:radial-gradient(ellipse 70% 45% at 50% -5%,rgba(38,42,140,.45),transparent 70%),radial-gradient(ellipse 45% 40% at 0% 100%,rgba(255,31,45,.16),transparent 70%),radial-gradient(ellipse 45% 40% at 100% 100%,rgba(255,31,45,.12),transparent 70%),linear-gradient(rgba(3,3,10,.35),rgba(3,3,10,.55)),url(led-textura.jpg) 0 0/700px repeat,#0b0f22!important}' +
+    '.emb{background:url(logo-puk.png) center/cover no-repeat!important;box-shadow:0 0 0 2px #ff1f2d,0 0 18px rgba(255,31,45,.35)!important}.emb::before{display:none!important}' +
+    '.ph-art::after{content:"";position:absolute;width:clamp(70px,9vw,120px);aspect-ratio:1;right:4%;top:4%;background:url(logo-puk.png) center/cover;border-radius:50%;box-shadow:0 0 0 3px #ff1f2d,0 10px 30px rgba(0,0,0,.6)}' +
+    '</style>\n</head>');
+  t = t.replace(/<meta property="og:image" content="[^"]*">/, '<meta property="og:image" content="https://hokej.gypce.cz/logo-puk.png">');
+  t = t.replace(/favicon-32\.png(\?v=\d+)?"/g, 'favicon-32.png?v=2"').replace(/favicon-512\.png(\?v=\d+)?"/g, 'favicon-512.png?v=2"').replace(/apple-touch-icon\.png(\?v=\d+)?"/g, 'apple-touch-icon.png?v=2"');
+  fs.writeFileSync("index.html", t);
+  for (const f of ["videa.html", "vizualizace.html", "kmity/index.html"]) { if (!fs.existsSync(f)) continue; let h = fs.readFileSync(f, "utf8"); h = h.replace(/favicon-32\.png(\?v=\d+)?"/g, 'favicon-32.png?v=2"').replace(/apple-touch-icon\.png(\?v=\d+)?"/g, 'apple-touch-icon.png?v=2"'); fs.writeFileSync(f, h); }
+  console.log("logo puk + led:", t.includes("ice-theme"), fs.existsSync("logo-puk.png"), fs.existsSync("led-textura.jpg"));
+}
+
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/\.ph-art::after\{[^}]*\}/, ""); fs.writeFileSync("index.html", t); console.log("bez odznaku na plakátu:", !t.includes(".ph-art::after")); }
