@@ -362,3 +362,8 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   if (!t.includes("ice-top")) t = t.replace("</head>", '<style id="ice-top">.poster-hero{background:linear-gradient(180deg,rgba(3,3,10,.15),rgba(3,3,10,.55) 85%,rgba(3,3,10,.9)),url(led-textura.jpg) 0 0/700px repeat!important}.ph-faces img{opacity:.3!important}.ph-faces::after{background:radial-gradient(ellipse 45% 55% at 50% 40%,rgba(11,15,34,.05),rgba(11,15,34,.7) 100%)!important}.poster-theme .site-header{background:linear-gradient(rgba(6,8,22,.72),rgba(6,8,22,.72)),url(led-textura.jpg) 0 0/700px repeat!important}</style>\n</head>');
   fs.writeFileSync("index.html", t); console.log("led nahoře:", t.includes("ice-top"));
 }
+
+// vycentrované logo – obejít cache
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/url\(logo-puk\.png(\?v=\d+)?\)/g, "url(logo-puk.png?v=2)").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=3").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=3").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=3"); fs.writeFileSync("index.html", t); console.log("logo v2:", t.includes("logo-puk.png?v=2")); }
+
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=3").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=4").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=4").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=4"); fs.writeFileSync("index.html", t); console.log("logo v3:", t.includes("logo-puk.png?v=3")); }
