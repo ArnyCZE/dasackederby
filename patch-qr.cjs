@@ -54,3 +54,21 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("soupisky:", t.includes("Kocourek (C)"), t.includes("Janovský (C)"));
 }
+
+// Soupisky po formacích (doplňovat sem, až Arnošt pošle další)
+{
+  const TEAMS = {
+    AB: { f: [["1. formace", ["Václav Kocourek (C)", "Veselý", "Lazarák", "Kučera", "Korel", "Smolík"]]],
+      q: ["Čeká nás těžký zápas, ale jdeme do něj jako jeden tým. 4. FH má špičkového gólmana, ale s naší ofenzívou to nebude mít lehké.", "Václav Kocourek, kapitán 8. AB"] },
+    FH: { f: [["1. formace", ["Prokop Janovský (C)", "Šmerdová (A)", "Čichovský", "Borovec", "Müller", "Voženílek"]],
+              ["3. formace", ["Valeš", "Komers", "Herink", "Nimrichtr", "Svatoš"]]],
+      q: ["Do zápasu proti 8. AB nejdeme jako favorité, ale právě to nám dává šanci všechny překvapit. Každou příležitost chceme proměnit a odejít s výhrou.", "Prokop Janovský, kapitán 4. FH"] }
+  };
+  const html = T => T.f.map(([n, l]) => '<p class="roster-note">' + n + '</p><ul class="roster">' + l.map(x => "<li>" + x + "</li>").join("") + "</ul>").join("") +
+    '<blockquote class="cap-quote"><p>„' + T.q[0] + '“</p><cite>' + T.q[1] + "</cite></blockquote>";
+  let t = fs.readFileSync("index.html", "utf8"), n = 0;
+  t = t.replace(/(?:<p class="roster-note">[^<]*<\/p>)?<ul class="roster">[\s\S]*?<\/blockquote>/g, () => html(n++ === 0 ? TEAMS.AB : TEAMS.FH));
+  t = t.replace(".roster-note{margin:.4rem 0 0;", ".roster-note{margin:1rem 0 .3rem;");
+  fs.writeFileSync("index.html", t);
+  console.log("formace:", n, "týmy | 3. formace FH:", t.includes("Nimrichtr"));
+}
