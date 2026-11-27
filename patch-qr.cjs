@@ -321,3 +321,12 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/url\(hraci\.jpg\?v=\d+\)/g, "url(hraci.jpg?v=3)"); fs.writeFileSync("index.html", t); console.log("sprite v3:", t.includes("hraci.jpg?v=3")); }
 
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/url\(hraci\.jpg\?v=\d+\)/g, "url(hraci.jpg?v=4)"); fs.writeFileSync("index.html", t); console.log("sprite v4:", t.includes("hraci.jpg?v=4")); }
+
+// ikona webu = kolečko s koněm jako v hlavičce
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/<link rel="icon"[^>]*>/, '<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">\n<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">');
+  fs.writeFileSync("index.html", t);
+  for (const f of ["videa.html", "vizualizace.html", "kmity/index.html"]) { if (!fs.existsSync(f)) continue; let h = fs.readFileSync(f, "utf8"); const pre = f.includes("/") ? "../" : ""; if (!h.includes("favicon-32.png")) { h = h.replace(/<link rel="icon"[^>]*>\s*/, ""); h = h.replace("</title>", '</title>\n<link rel="icon" type="image/png" href="' + pre + 'favicon-32.png">\n<link rel="apple-touch-icon" href="' + pre + 'apple-touch-icon.png">'); fs.writeFileSync(f, h); } }
+  console.log("favicon:", t.includes("favicon-32.png"), fs.existsSync("favicon-32.png"));
+}
