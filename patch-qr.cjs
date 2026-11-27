@@ -472,3 +472,42 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("záložky formací:", t.includes("formace.js"));
 }
+
+// Arnošt 27. 11. 23:06: soupiska kompaktnější + animace
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/<style id="f-tabs">[\s\S]*?<\/style>\n/, "");
+  if (!t.includes('id="f-tabs2"')) t = t.replace("</head>", '<style id="f-tabs2">' +
+    // záložky s posuvným podkladem
+    '.f-tabs{position:relative;display:flex;margin:.9rem auto 0;max-width:420px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);padding:4px}' +
+    '.f-tabs button{position:relative;z-index:1;flex:1;font:800 .76rem/1 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#c9cede;background:none;border:0;padding:.6rem .3rem;cursor:pointer;transition:color .25s}' +
+    '.f-tabs button:hover{color:#fff}.f-tabs button.on{color:#fff}.team-b .f-tabs button.on{color:#10113b}' +
+    '.f-pill{position:absolute;left:0;top:4px;bottom:4px;background:#ff1f2d;transition:transform .35s cubic-bezier(.2,.8,.2,1),width .35s;box-shadow:0 6px 18px rgba(255,31,45,.45)}.team-b .f-pill{background:#fff;box-shadow:0 6px 18px rgba(255,255,255,.25)}' +
+    // kompaktní hřiště
+    '.f-stage{position:relative;max-width:420px;margin:.7rem auto 0;touch-action:pan-y}' +
+    '.has-tabs .rink{display:none;margin:0!important;aspect-ratio:1/.92}.has-tabs .rink.on{display:block}' +
+    '.has-tabs .rink h4{display:none}' +
+    '.rp .ph{width:clamp(46px,7vw,66px)!important}.rp .tagname{font-size:clamp(.58rem,1vw,.72rem)!important}' +
+    '.rink.from-r{animation:fR .4s cubic-bezier(.2,.8,.2,1)}.rink.from-l{animation:fL .4s cubic-bezier(.2,.8,.2,1)}' +
+    '@keyframes fR{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}@keyframes fL{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:none}}' +
+    // hráči naskakují postupně
+    '.rink.on .rp{animation:pIn .45s cubic-bezier(.3,1.5,.5,1) both}' +
+    '.rink.on .rp:nth-of-type(2){animation-delay:.05s}.rink.on .rp:nth-of-type(3){animation-delay:.1s}.rink.on .rp:nth-of-type(4){animation-delay:.15s}.rink.on .rp:nth-of-type(5){animation-delay:.2s}.rink.on .rp:nth-of-type(6){animation-delay:.25s}.rink.on .rp:nth-of-type(7){animation-delay:.3s}' +
+    '@keyframes pIn{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
+    '.rink-team.pre .rp{animation-play-state:paused}.rink-team.seen .rp{animation-play-state:running}' +
+    '.rp .ph{transition:transform .25s}.rp:hover .ph{transform:scale(1.12)}' +
+    // šipky
+    '.f-arrow{position:absolute;top:50%;width:36px;height:36px;margin-top:-18px;border-radius:50%;border:0;background:rgba(10,12,40,.8);color:#fff;font:700 1.5rem/1 Inter,sans-serif;cursor:pointer;display:grid;place-items:center;padding-bottom:3px;opacity:.85;transition:opacity .2s,transform .2s;z-index:2}' +
+    '.f-arrow:hover{opacity:1;transform:scale(1.1)}.f-prev{left:-14px}.f-next{right:-14px}' +
+    // kompaktnější citát a trenéři
+    '.cq-top{margin:.8rem auto .1rem!important;max-width:460px;padding:.7rem .9rem!important}.cq-top p{font-size:.88rem!important;line-height:1.45!important}.cq-ph{width:56px!important;height:56px!important}' +
+    '.team-extra{max-width:420px;margin:.8rem auto 0!important;font-size:.85rem;text-align:center}.rink-team header{padding:1.1rem 1.2rem 1rem!important}' +
+    // tablet: týmy pod sebou, ale vedle sebe od 1100 px
+    '@media(min-width:761px) and (max-width:1100px){.teams{grid-template-columns:1fr!important;max-width:640px;margin-inline:auto}.vs-big{justify-self:center}}' +
+    '@media(max-width:760px){.f-tabs,.f-stage{max-width:none;margin-inline:.4rem}.f-prev{left:-6px}.f-next{right:-6px}.f-arrow{width:32px;height:32px;margin-top:-16px}.cq-top{margin-inline:.4rem!important}}' +
+    '@media(prefers-reduced-motion:reduce){.rink.from-r,.rink.from-l,.rink.on .rp{animation:none!important}.f-pill{transition:none}}' +
+    '</style>\n</head>');
+  t = t.replace(/formace\.js\?v=\d+/, "formace.js?v=2");
+  fs.writeFileSync("index.html", t);
+  console.log("soupiska kompakt + animace:", t.includes("f-tabs2"), t.includes("formace.js?v=2"));
+}
