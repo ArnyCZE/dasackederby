@@ -3,6 +3,6 @@
   "private": true,
   "scripts": {
     "postinstall": "node stahni-videa.js",
-    "build": "node patch-index.cjs && node patch-videa.cjs && node patch-qr.cjs && cp kmity/app.js /tmp/kmity-check.mjs && node --check /tmp/kmity-check.mjs && echo 'kmity app.js: syntaxe OK' && node -e \"console.log(require('fs').readdirSync('video').length + ' souborů ve video/')\""
+    "build": "node patch-index.cjs && node patch-videa.cjs && node patch-qr.cjs && node probe.cjs && cp kmity/app.js /tmp/kmity-check.mjs && node --check /tmp/kmity-check.mjs && echo 'kmity app.js: syntaxe OK'"
   }
 }

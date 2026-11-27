@@ -159,3 +159,30 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("vstup od:", t.includes("Vstup od 19:00"));
 }
+
+// Arnošt 27. 11. 14:47: pořadí program → zápas → vstupné → Instagram; reel jen jako proklik v Instagram pruhu; účet jen jednou; bez rámečku kolem QR
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  const cut = id => { const re = new RegExp('\\n\\s*<section class="section" id="' + id + '">[\\s\\S]*?</section>\\n'); const m = t.match(re); if (!m) return ""; t = t.replace(m[0], "\n"); return m[0]; };
+  cut("video");
+  const prog = cut("program");
+  if (prog) t = t.replace('\n  <section class="section" id="zapas">', prog.replace(/^\n+/, "\n") + '\n  <section class="section" id="zapas">');
+  t = t.replace(/\s*<a href="#video">Video<\/a>/, "");
+  t = t.replace('<a href="#zapas">Zápas</a>\n      <a href="#program">Program</a>', '<a href="#program">Program</a>\n      <a href="#zapas">Týmy</a>');
+  // Instagram pruh s proklikem na upoutávku
+  t = t.replace('<p class="lead">Soupisky, fotky ze zápasu a výsledky.</p>\n      </div>\n      <a class="btn btn-primary" href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>Otevřít Instagram</a>',
+    '<p class="lead">Upoutávka, soupisky, fotky ze zápasu a výsledky.</p>\n      </div>\n      <div class="ig-btns"><a class="btn btn-primary" href="https://www.instagram.com/reel/DgPZsuSuLuz/" target="_blank" rel="noopener">▶ Pustit upoutávku</a><a class="btn btn-outline" href="https://www.instagram.com/hokejdasak/" target="_blank" rel="noopener"><svg><use href="#i-ig"/></svg>Sledovat @hokejdasak</a></div>');
+  if (!t.includes(".ig-btns{")) t = t.replace("</head>", '<style>.ig-btns{display:flex;gap:.8rem;flex-wrap:wrap}.acc{display:none!important}.pay-card #qr{border:0!important;box-shadow:none!important;padding:10px}.pay-card #qr svg,.pay-card #qr svg *{border:0!important;outline:0!important}.pay-card #qr svg rect[fill="#ffffff"],.pay-card #qr svg rect[fill="white"]{stroke:none!important}</style>\n</head>');
+  fs.writeFileSync("index.html", t);
+  const pos = id => t.indexOf('id="' + id + '"');
+  console.log("pořadí program<zápas<vstupné:", pos("program") < pos("zapas") && pos("zapas") < pos("podpora"), "| video sekce pryč:", !t.includes('id="video"'), "| reel proklik:", t.includes("Pustit upoutávku"));
+}
+
+// oprava: řádek s časy se při každém sestavení přidával znovu → nechat právě jeden
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace(/\s*<p class="ph-times">[^<]*<\/p>/g, "");
+  t = t.replace('<p class="ph-when">Úterý 1. 12.<br>Enteria aréna</p>', '<p class="ph-when">Úterý 1. 12.<br>Enteria aréna</p>\n    <p class="ph-times">Vstup od 19:00 · začátek zápasu 19:30</p>');
+  fs.writeFileSync("index.html", t);
+  console.log("řádků s časy:", (t.match(/class="ph-times"/g) || []).length, "| otevření haly:", /Otevření haly/.test(t));
+}
