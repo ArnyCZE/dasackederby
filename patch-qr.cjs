@@ -149,3 +149,13 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("AB trenéři:", t.includes("Šťastný"));
 }
+
+// Arnošt: „vstup od 19:00“ místo „otevření haly“
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  t = t.replace("Otevření haly 19:00 · začátek zápasu 19:30", "Vstup od 19:00 · začátek zápasu 19:30");
+  t = t.replace("<dt>Otevření haly</dt><dd>19:00</dd>", "<dt>Vstup</dt><dd>od 19:00</dd>");
+  t = t.replace("<h3>Otevření haly</h3><p>19:00–19:30</p>", "<h3>Vstup do haly</h3><p>od 19:00</p>");
+  fs.writeFileSync("index.html", t);
+  console.log("vstup od:", t.includes("Vstup od 19:00"));
+}
