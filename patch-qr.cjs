@@ -548,3 +548,8 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
   fs.writeFileSync("index.html", t);
   console.log("FAQ:", (t.match(/<details>/g) || []).length, "otázek | v menu:", t.includes('href="#faq"'));
 }
+
+// 28. 11.: logo puk v4 (celé G uvnitř kruhu) – obejít cache
+{ let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=5").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=6").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=6").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=6"); fs.writeFileSync("index.html", t);
+  for (const f of ["videa.html", "vizualizace.html", "kmity/index.html", "podminky.html"]) { if (!fs.existsSync(f)) continue; let h = fs.readFileSync(f, "utf8"); h = h.replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=6").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=6").replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=5"); fs.writeFileSync(f, h); }
+  console.log("logo v5:", t.includes("logo-puk.png?v=5")); }
