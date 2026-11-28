@@ -553,3 +553,26 @@ console.log("bufet v HTML:", /Kofola|pricelist|id="bufet"/.test(s), "| IBAN:", a
 { let t = fs.readFileSync("index.html", "utf8"); t = t.replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=5").replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=6").replace(/favicon-512\.png\?v=\d+/g, "favicon-512.png?v=6").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=6"); fs.writeFileSync("index.html", t);
   for (const f of ["videa.html", "vizualizace.html", "kmity/index.html", "podminky.html"]) { if (!fs.existsSync(f)) continue; let h = fs.readFileSync(f, "utf8"); h = h.replace(/favicon-32\.png\?v=\d+/g, "favicon-32.png?v=6").replace(/apple-touch-icon\.png\?v=\d+/g, "apple-touch-icon.png?v=6").replace(/logo-puk\.png\?v=\d+/g, "logo-puk.png?v=5"); fs.writeFileSync(f, h); }
   console.log("logo v5:", t.includes("logo-puk.png?v=5")); }
+
+// Arnošt 28. 11.: hlasování o hráči zápasu (Google formulář) – na webu až od 19:30 v den zápasu
+{
+  let t = fs.readFileSync("index.html", "utf8");
+  if (!t.includes('id="hlasovani"')) {
+    const sec = '\n  <section class="section" id="hlasovani" hidden>\n    <div class="container vote">\n      <div>\n        <div class="sec-head">\n          <p class="kicker"><span class="vote-live">● LIVE</span> Hlasování</p>\n          <h2>Hráč zápasu</h2>\n          <p class="lead">Kdo podle tebe předvádí nejlepší výkon? Naskenuj QR kód nebo klikni na tlačítko a hlasuj. Vítěze vyhlásíme na konci zápasu.</p>\n        </div>\n        <a class="btn btn-primary" href="https://forms.gle/XE8BTYwM4pDSrPCr7" target="_blank" rel="noopener">Hlasovat <svg><use href="#i-arrow"/></svg></a>\n      </div>\n      <div class="vote-card"><div id="vote-qr"></div><p>Naskenuj mobilem</p></div>\n    </div>\n  </section>\n';
+    t = t.replace("<main>\n", "<main>\n" + sec);
+    t = t.replace('<a href="#program">Program</a>', '<a href="#hlasovani" id="nav-hlasovani" hidden>Hlasování</a>\n      <a href="#program">Program</a>');
+    t = t.replace('<script src="identity.js', '<script src="hlasovani.js?v=1"></script>\n<script src="identity.js');
+    t = t.replace("</head>", '<style id="vote-css">' +
+      '.vote{display:grid;grid-template-columns:1.3fr .7fr;gap:clamp(2rem,6vw,5rem);align-items:center}' +
+      '.vote .sec-head{text-align:left;margin-inline:0}.vote .lead{margin-inline:0}' +
+      '.vote-live{color:#ff1f2d;animation:livepulse 1.6s ease-in-out infinite;margin-right:.4rem}' +
+      '.vote-card{justify-self:center;width:min(320px,100%);background:#fff;border-top:6px solid #ff1f2d;padding:18px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:voteIn .6s cubic-bezier(.3,1.4,.5,1)}' +
+      '.vote-card svg{display:block;width:100%;height:auto}.vote-card svg,.vote-card svg path{stroke:none!important}.vote-card p{margin:.6rem 0 0;color:#10113b;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:.85rem}' +
+      '#nav-hlasovani{color:#ff1f2d!important;font-weight:800}' +
+      '@keyframes voteIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}' +
+      '@media(max-width:980px){.vote{grid-template-columns:1fr}.vote .sec-head,.vote .lead{text-align:center;margin-inline:auto}.vote>div:first-child{text-align:center}}' +
+      '</style>\n</head>');
+  }
+  fs.writeFileSync("index.html", t);
+  console.log("hlasování na webu:", t.includes('id="hlasovani"'), t.includes("hlasovani.js"));
+}

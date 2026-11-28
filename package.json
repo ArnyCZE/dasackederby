@@ -3,6 +3,6 @@
   "private": true,
   "scripts": {
     "postinstall": "node stahni-videa.js",
-    "build": "node patch-index.cjs && node patch-videa.cjs && node patch-qr.cjs && node probe.cjs && node --check app.js && node --check qr-save.js && node --check identity.js && node --check formace.js && echo 'web JS: syntaxe OK' && cp kmity/app.js /tmp/kmity-check.mjs && node --check /tmp/kmity-check.mjs && echo 'kmity app.js: syntaxe OK'"
+    "build": "node patch-index.cjs && node patch-videa.cjs && node patch-qr.cjs && node probe.cjs && node --check app.js && node --check qr-save.js && node --check identity.js && node --check formace.js && node --check hlasovani.js && echo 'web JS: syntaxe OK' && cp kmity/app.js /tmp/kmity-check.mjs && node --check /tmp/kmity-check.mjs && echo 'kmity app.js: syntaxe OK'"
   }
 }
